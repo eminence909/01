@@ -251,14 +251,14 @@
       "theme": {
         "forest": "#3b1a5e",
         "emerald": "#7b3fb0",
-        "leaf": "#f1e8fa",
         "gold": "#7a3f8a",
+        "leaf": "#f1e8fa",
         "bg": "#f8f4fb",
         "heroSub": "#e6c8ff",
         "icon": "💜"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "thai-elephant-day",
