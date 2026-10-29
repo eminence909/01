@@ -331,14 +331,14 @@
       "theme": {
         "forest": "#0a3a5c",
         "emerald": "#0e7490",
-        "leaf": "#e0f4f8",
         "gold": "#0b6b78",
+        "leaf": "#e0f4f8",
         "bg": "#f0f8fa",
         "heroSub": "#bdeeff",
         "icon": "💧"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     }
   ]
 }
