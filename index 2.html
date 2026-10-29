@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ตอบปัญหาออนไลน์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#123d27;
+  --emerald:#1f6b45;
+  --leaf:#e6f0e8;
+  --gold:#b8862b;
+  --hero-sub:#f0d98a;
+  --rib1:#9c6f1f;--rib2:#f6e3a0;--rib3:#c8962f;--rib4:#f0d98a;
+  --ink:#1b2620;
+  --muted:#5a6a60;
+  --line:#cfdcd2;
+  --paper:#ffffff;
+  --bg:#f3f6f3;
+  --danger:#a63a2b;
+  --font:"Sarabun","Noto Sans Thai","Tahoma",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.65}
+main{max-width:720px;margin:0 auto;padding:0 0 48px}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* hero */
+.hero{position:relative;background:var(--forest);color:#fff;padding:40px 24px 76px;overflow:hidden}
+.hero h1{margin:0;font-size:clamp(1.7rem,6vw,2.5rem);line-height:1.35;font-weight:700}
+.hero .date{margin:6px 0 0;font-size:clamp(1.2rem,4vw,1.5rem);font-weight:600;color:var(--hero-sub)}
+.hero .intro{margin:20px 0 0;font-size:1rem;color:#d4e4d9;max-width:34em}
+.hero .intro p{margin:0}
+.ribbon{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:56px;display:block}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin:-24px 16px 0;padding:24px 20px;position:relative}
+.card + .card{margin-top:16px}
+.facts{list-style:none;margin:0 0 4px;padding:0;display:grid;gap:6px;font-size:1rem}
+.facts li{padding-left:22px;position:relative}
+.facts li::before{content:"";position:absolute;left:2px;top:.72em;width:9px;height:9px;border-radius:50%;background:var(--gold)}
+
+h2{font-size:1.35rem;line-height:1.4;margin:0 0 8px}
+.field{margin:0 0 16px}
+label{display:block;font-weight:600;margin-bottom:4px}
+input[type=text],select{width:100%;min-height:50px;padding:10px 14px;font:inherit;color:var(--ink);background:#fff;border:1.5px solid #9db3a4;border-radius:10px}
+input[type=text]:focus,select:focus{border-color:var(--emerald);outline:3px solid rgba(31,107,69,.25);outline-offset:0}
+.row2{display:grid;gap:0 12px;grid-template-columns:1fr}
+@media(min-width:560px){.row2{grid-template-columns:1fr 1fr}}
+.hint{font-size:.9rem;color:var(--muted);margin:4px 0 0}
+.err{color:var(--danger);font-size:.95rem;font-weight:600;margin:8px 0 0;min-height:1.4em}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:10px 24px;font:inherit;font-weight:700;border-radius:12px;border:2px solid var(--emerald);background:var(--emerald);color:#fff;cursor:pointer;text-decoration:none}
+.btn:hover{filter:brightness(.92)}
+.btn.alt{background:#fff;color:var(--emerald)}
+.btn.alt:hover{background:var(--leaf)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.block{width:100%}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+.actions .btn{flex:1 1 180px}
+
+/* quiz */
+.progress{height:8px;background:var(--leaf);border-radius:99px;overflow:hidden;margin:4px 0 10px}
+.progress i{display:block;height:100%;width:0;background:var(--emerald);transition:width .25s}
+.qmeta{display:flex;justify-content:space-between;color:var(--muted);font-size:.95rem;font-weight:600}
+.question{font-size:1.25rem;line-height:1.55;font-weight:600;margin:18px 0 16px}
+.choices{display:grid;gap:10px}
+.choice{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;min-height:56px;padding:12px 14px;font:inherit;color:var(--ink);background:#fff;border:1.5px solid #9db3a4;border-radius:12px;cursor:pointer}
+.choice:hover{background:var(--leaf)}
+.choice .tag{flex:none;width:32px;height:32px;border-radius:50%;border:1.5px solid #9db3a4;display:grid;place-items:center;font-weight:700;font-size:.95rem;line-height:1;background:#fff}
+.choice[aria-pressed=true]{border-color:var(--emerald);background:var(--leaf);box-shadow:inset 0 0 0 1px var(--emerald)}
+.choice[aria-pressed=true] .tag{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.dots{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}
+.dot{width:40px;height:40px;border-radius:10px;border:1.5px solid #9db3a4;background:#fff;font:inherit;font-size:.95rem;font-weight:600;cursor:pointer;color:var(--ink)}
+.dot.done{background:var(--leaf);border-color:var(--emerald)}
+.dot.cur{border:2.5px solid var(--forest)}
+.dot.miss{border-color:var(--danger);color:var(--danger)}
+.nav{display:flex;gap:12px;margin-top:22px}
+.nav .btn{flex:1}
+
+/* result */
+.score{font-size:1.1rem;margin:0 0 6px}
+.score b{font-size:1.5rem}
+.good{color:var(--emerald)}
+.bad{color:var(--danger)}
+.certwrap{margin:16px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#e9eee9;min-height:120px;position:relative}
+.certwrap img{display:block;width:100%;height:auto}
+.certwrap .busy{position:absolute;inset:0;display:grid;place-items:center;background:rgba(255,255,255,.75);font-weight:600}
+.check{display:flex;gap:12px;align-items:flex-start;margin:14px 0;font-weight:600;cursor:pointer}
+.check input{width:26px;height:26px;flex:none;margin-top:3px;accent-color:var(--emerald)}
+.editbox{background:var(--leaf);border-radius:12px;padding:16px;margin:12px 0}
+.notice{background:#fff7e0;border:1px solid #ecd48a;border-radius:10px;padding:12px 14px;margin:0 0 16px;font-size:.98rem}
+.tip{font-size:.92rem;color:var(--muted);margin:14px 0 0}
+.topics{display:grid;gap:12px;margin-top:12px}
+.topic{display:block;padding:16px 18px;border:1.5px solid #9db3a4;border-left:6px solid var(--tc,#9db3a4);border-radius:12px;color:var(--ink);text-decoration:none;background:#fff}
+a.topic:hover{background:var(--leaf)}
+.topic b{display:block;font-size:1.1rem;line-height:1.45}
+.topic span{display:block;color:var(--muted);font-size:.95rem;margin-top:2px}
+.topic.off{background:#eef1ee;color:#6b7770;border-style:dashed;border-left-style:solid;border-left-color:#b9c2bc}
+.topic.off b{color:#6b7770}
+.topic .badge{display:inline-block;margin-top:8px;padding:2px 12px;border-radius:99px;background:#d9dfda;font-size:.88rem;font-weight:600;color:#44524a}
+.heroicon{font-size:2.2rem;line-height:1;margin:0 0 8px}
+.heroicon:empty{display:none}
+.ver{text-align:center;color:var(--muted);font-size:.8rem;margin:20px 0 0}
+.fatal{margin:40px 16px;padding:20px;background:#fff;border:1px solid var(--line);border-radius:12px}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app" hidden>
+
+  <header class="hero">
+    <div class="heroicon" id="heroIcon" aria-hidden="true"></div>
+    <h1 id="title"></h1>
+    <p class="date" id="dateText"></p>
+    <div class="intro" id="intro"></div>
+    <svg class="ribbon" viewBox="0 0 800 56" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1">
+          <stop offset="0" style="stop-color:var(--rib1)"/><stop offset=".35" style="stop-color:var(--rib2)"/>
+          <stop offset=".6" style="stop-color:var(--rib3)"/><stop offset="1" style="stop-color:var(--rib4)"/>
+        </linearGradient>
+      </defs>
+      <path d="M0 30 C140 0 300 56 470 26 S700 4 800 24 L800 34 C700 14 560 40 470 40 S150 18 0 44Z" fill="url(#g)"/>
+      <path d="M0 44 C150 18 330 62 470 40 S700 14 800 34 L800 56 L0 56Z" style="fill:var(--bg)"/>
+    </svg>
+  </header>
+
+  <!-- 0 หน้ารวมกิจกรรม -->
+  <section id="s-home" class="card" hidden>
+    <h2>เลือกกิจกรรม</h2>
+    <div class="topics" id="topicList"></div>
+  </section>
+
+  <!-- 0.5 ปิดรับ/ล็อก -->
+  <section id="s-closed" class="card" hidden>
+    <h2 id="closedTitle"></h2>
+    <p id="closedMsg"></p>
+    <a class="btn block" href="./">ดูกิจกรรมอื่น</a>
+  </section>
+
+  <!-- 1 หน้าแรก -->
+  <section id="s-start" class="card">
+    <div class="notice" id="prevNote" hidden>โหมดทดสอบของแอดมิน กิจกรรมนี้ยังล็อกอยู่ นักเรียนยังเข้าทำไม่ได้</div>
+    <div class="notice" id="inapp" hidden>
+      ตอนนี้เปิดเว็บในแอปอื่น (เช่น LINE หรือ Facebook) การดาวน์โหลดอาจใช้ไม่ได้
+      แนะนำให้กดเมนูแล้วเลือก “เปิดใน Safari” หรือ “เปิดใน Chrome”
+    </div>
+    <ul class="facts" id="facts"></ul>
+    <h2 style="margin-top:22px">กรอกชื่อเพื่อเริ่มทำข้อสอบ</h2>
+    <div id="nameSlotStart">
+      <div id="nameFields">
+        <div class="field">
+          <label for="prefix">คำนำหน้า</label>
+          <select id="prefix">
+            <option value="__none" disabled selected>เลือกคำนำหน้า</option>
+            <option>เด็กชาย</option>
+            <option>เด็กหญิง</option>
+            <option>นาย</option>
+            <option>นางสาว</option>
+            <option>นาง</option>
+            <option value="__blank">ไม่ใส่คำนำหน้า</option>
+            <option value="__custom">อื่นๆ (พิมพ์เอง)</option>
+          </select>
+        </div>
+        <div class="field" id="customWrap" hidden>
+          <label for="customPrefix">คำนำหน้าที่ต้องการ</label>
+          <input type="text" id="customPrefix" maxlength="30" autocomplete="off">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="first">ชื่อ</label>
+            <input type="text" id="first" maxlength="40" autocomplete="given-name">
+          </div>
+          <div class="field">
+            <label for="last">นามสกุล</label>
+            <input type="text" id="last" maxlength="40" autocomplete="family-name">
+          </div>
+        </div>
+        <p class="hint">ชื่อที่กรอกจะพิมพ์ลงบนเกียรติบัตร กรุณาพิมพ์ให้ถูกต้อง</p>
+        <p class="err" id="nameErr" role="alert"></p>
+      </div>
+    </div>
+    <button class="btn block" id="startBtn" type="button">เริ่มทำข้อสอบ</button>
+  </section>
+
+  <!-- 2 ข้อสอบ -->
+  <section id="s-quiz" class="card" hidden>
+    <div class="qmeta"><span id="qNo"></span><span id="qAnswered"></span></div>
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+    <p class="question" id="qText"></p>
+    <div class="choices" id="choices" role="group" aria-label="ตัวเลือก"></div>
+    <div class="nav">
+      <button class="btn alt" id="prevBtn" type="button">ย้อนกลับ</button>
+      <button class="btn" id="nextBtn" type="button">ข้อถัดไป</button>
+    </div>
+    <p class="err" id="quizErr" role="alert"></p>
+    <div class="dots" id="dots" aria-label="เลือกข้อ"></div>
+  </section>
+
+  <!-- 3 ผลลัพธ์ -->
+  <section id="s-result" class="card" hidden>
+    <h2 id="resTitle"></h2>
+    <p class="score" id="resScore"></p>
+    <p id="resNote"></p>
+
+    <div id="failBox" hidden>
+      <div class="actions"><button class="btn" id="retryBtn" type="button">ทำข้อสอบใหม่</button></div>
+    </div>
+
+    <div id="passBox" hidden>
+      <div class="certwrap">
+        <img id="certImg" alt="ตัวอย่างเกียรติบัตร">
+        <div class="busy" id="certBusy">กำลังสร้างเกียรติบัตร…</div>
+      </div>
+      <p class="hint" style="margin:0 0 8px">ชื่อบนเกียรติบัตร: <b id="certName"></b></p>
+      <button class="btn alt" id="editBtn" type="button">แก้ไขชื่อ</button>
+      <div class="editbox" id="editBox" hidden>
+        <div id="nameSlotResult"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="confirm"><span>ตรวจสอบแล้ว ชื่อบนเกียรติบัตรถูกต้อง</span></label>
+      <div class="actions">
+        <button class="btn gold" id="dlPng" type="button" disabled>ดาวน์โหลด PNG</button>
+        <button class="btn gold" id="dlPdf" type="button" disabled>ดาวน์โหลด PDF</button>
+      </div>
+      <p class="err" id="dlErr" role="alert"></p>
+      <p class="tip">กดดาวน์โหลดไม่ได้? กดค้างที่รูปเกียรติบัตรแล้วเลือกบันทึกรูป</p>
+      <div class="actions" style="margin-top:20px"><button class="btn alt" id="homeBtn" type="button">กลับหน้าแรก</button></div>
+    </div>
+  </section>
+  <p class="ver">เวอร์ชัน 4</p>
+</main>
+
+<div class="fatal" id="fatal" hidden></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- โหลดหัวข้อ ---------- */
+var params = new URLSearchParams(location.search);
+var topicId = (params.get("t") || params.get("topic") || "").replace(/[^a-zA-Z0-9_-]/g, "");
+var $ = function(id){ return document.getElementById(id); };
+
+function fatal(msg){
+  var f = $("fatal"); f.hidden = false; f.textContent = msg;
+}
+function loadTopic(){
+  var s = document.createElement("script");
+  s.src = "topics/" + topicId + "/config.js?v=" + Date.now();
+  s.onload = function(){ window.QUIZ_TOPIC ? init(window.QUIZ_TOPIC) : fatal("ไม่พบข้อมูลแบบทดสอบ"); };
+  s.onerror = function(){ fatal("ไม่พบแบบทดสอบนี้ กรุณาตรวจสอบลิงก์อีกครั้ง"); };
+  document.head.appendChild(s);
+}
+
+/* ---------- ธีมสี / สถานะกิจกรรม ---------- */
+var HEX = /^#[0-9a-fA-F]{6}$/;
+function mix(a, b, k){
+  var pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16), out = "#";
+  [16, 8, 0].forEach(function(s){
+    var ca = (pa >> s) & 255, cb = (pb >> s) & 255;
+    out += ("0" + Math.round(ca + (cb - ca) * k).toString(16)).slice(-2);
+  });
+  return out;
+}
+function applyTheme(th){
+  if (!th) return;
+  var st = document.documentElement.style;
+  var map = { forest: "--forest", emerald: "--emerald", leaf: "--leaf", gold: "--gold", bg: "--bg", heroSub: "--hero-sub" };
+  Object.keys(map).forEach(function(k){ if (HEX.test(th[k] || "")) st.setProperty(map[k], th[k]); });
+  if (HEX.test(th.gold || "")){
+    st.setProperty("--rib1", mix(th.gold, "#000000", 0.25)); st.setProperty("--rib2", mix(th.gold, "#ffffff", 0.6));
+    st.setProperty("--rib3", th.gold); st.setProperty("--rib4", mix(th.gold, "#ffffff", 0.45));
+  }
+  $("heroIcon").textContent = th.icon || "";
+}
+function getList(){
+  return fetch("topics/topics.json?v=" + Date.now(), { cache: "no-store" })
+    .then(function(r){ if (!r.ok) throw new Error("no list"); return r.json(); });
+}
+function topicStatus(t){
+  if (t.locked) return "locked";
+  var now = Date.now(), o = Date.parse(t.opensAt || ""), c = Date.parse(t.closesAt || "");
+  if (!isNaN(o) && now < o) return "notyet";
+  if (!isNaN(c) && now >= c) return "closed";
+  return "open";
+}
+function fmtTime(iso){
+  try {
+    return new Date(iso).toLocaleString("th-TH", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Bangkok" }) + " น.";
+  } catch(e){ return ""; }
+}
+function statusText(t, st){
+  return st === "locked" ? "ยังไม่เปิดรับ" : st === "notyet" ? "เปิดรับ " + fmtTime(t.opensAt) : st === "closed" ? "ปิดรับแล้ว" : "";
+}
+
+/* หน้ารวมกิจกรรม: แสดงเมื่อเปิดลิงก์โดยไม่มี ?t= */
+function showHome(data){
+  var list = (data && data.topics) || [];
+  if (!list.length){ fatal("ยังไม่มีกิจกรรม"); return; }
+  document.title = data.siteTitle || "ตอบปัญหาออนไลน์";
+  $("title").textContent = data.siteTitle || "ตอบปัญหาออนไลน์";
+  $("dateText").textContent = "";
+  $("intro").innerHTML = "";
+  (data.siteIntro || []).forEach(function(t){ var p = document.createElement("p"); p.textContent = t; $("intro").appendChild(p); });
+  var box = $("topicList"); box.innerHTML = "";
+  list.forEach(function(t){
+    var st = topicStatus(t), open = st === "open";
+    var el = document.createElement(open ? "a" : "div");
+    el.className = "topic" + (open ? "" : " off");
+    if (open){
+      el.href = "?t=" + encodeURIComponent(t.id);
+      if (t.theme && HEX.test(t.theme.emerald || "")) el.style.setProperty("--tc", t.theme.emerald);
+    } else el.setAttribute("aria-disabled", "true");
+    var b = document.createElement("b");
+    b.textContent = ((t.theme && t.theme.icon) ? t.theme.icon + " " : "") + t.title;
+    el.appendChild(b);
+    if (t.dateText){ var d = document.createElement("span"); d.textContent = t.dateText; el.appendChild(d); }
+    if (!open){ var g = document.createElement("span"); g.className = "badge"; g.textContent = statusText(t, st); el.appendChild(g); }
+    box.appendChild(el);
+  });
+  $("s-start").hidden = true; $("s-home").hidden = false; $("app").hidden = false;
+}
+function showClosed(e, st){
+  document.title = e.title;
+  $("title").textContent = e.title; $("dateText").textContent = e.dateText || ""; $("intro").innerHTML = "";
+  $("closedTitle").textContent = statusText(e, st);
+  $("closedMsg").textContent = st === "closed" ? "กิจกรรมนี้สิ้นสุดการรับแล้ว" : st === "notyet" ? "กลับมาทำข้อสอบได้เมื่อถึงเวลาที่กำหนด" : "กิจกรรมนี้ยังไม่เปิดให้ทำข้อสอบ โปรดรอประกาศจากคณะกรรมการสภานักเรียน";
+  $("s-start").hidden = true; $("s-closed").hidden = false; $("app").hidden = false;
+}
+var ENTRY = null, PREVIEW = params.get("preview") === "1";
+if (topicId){
+  getList().then(function(d){
+    var e = (d.topics || []).filter(function(t){ return t.id === topicId; })[0];
+    ENTRY = e || null;
+    if (e) applyTheme(e.theme);
+    var st = e ? topicStatus(e) : "open";
+    if (st !== "open" && !PREVIEW) showClosed(e, st); else loadTopic();
+  }, function(){ loadTopic(); });
+} else {
+  getList().then(showHome, function(){ topicId = "environment-day"; loadTopic(); });
+}
+
+function init(T){
+  var E = ENTRY || {};
+  document.title = T.pageTitle || E.title || T.title;
+  $("title").textContent = E.title || T.title;
+  $("dateText").textContent = E.dateText || T.dateText || "";
+  applyTheme(E.theme || T.theme);
+  if (PREVIEW && ENTRY && topicStatus(ENTRY) !== "open") $("prevNote").hidden = false;
+  $("intro").innerHTML = "";
+  (T.intro || []).forEach(function(t){ var p = document.createElement("p"); p.textContent = t; $("intro").appendChild(p); });
+
+  var total = T.questions.length;
+  var need = Math.ceil(total * T.passPercent / 100 - 1e-9);
+  var facts = [
+    total + " ข้อ ปรนัย 4 ตัวเลือก",
+    "ผ่านเมื่อตอบถูก " + need + " ข้อขึ้นไป (" + T.passPercent + "%)",
+    "ไม่จำกัดเวลา ทำซ้ำได้ไม่จำกัดครั้ง",
+    "ผ่านแล้วดาวน์โหลดเกียรติบัตรได้ทันที"
+  ];
+  facts.forEach(function(t){ var li = document.createElement("li"); li.textContent = t; $("facts").appendChild(li); });
+  $("app").hidden = false;
+  if (/Line\/|FBAN|FBAV|Instagram|MicroMessenger/i.test(navigator.userAgent)) $("inapp").hidden = false;
+
+  var state = { order: [], answers: [], idx: 0, correct: 0, cert: null, renderToken: 0, pngUrl: null, pngBlob: null, canvas: null };
+  var LETTERS = ["ก","ข","ค","ง","จ"];
+
+  function show(id){
+    ["s-start","s-quiz","s-result"].forEach(function(x){ $(x).hidden = (x !== id); });
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- ชื่อ ---------- */
+  var NAME_OK = /^[ก-๎ a-zA-Z.\-']+$/;
+  function clean(v){
+    return v.normalize("NFC").replace(/[​-‍﻿]/g, "").replace(/\s+/g, " ").trim();
+  }
+  function readName(){
+    var p = $("prefix").value, prefix = "";
+    if (p === "__none") return { error: "กรุณาเลือกคำนำหน้า" };
+    if (p === "__custom") { prefix = clean($("customPrefix").value); if (!prefix) return { error: "กรุณาพิมพ์คำนำหน้า" }; }
+    else if (p !== "__blank") prefix = p;
+    var first = clean($("first").value), last = clean($("last").value);
+    if (!first) return { error: "กรุณากรอกชื่อ" };
+    if (!last) return { error: "กรุณากรอกนามสกุล" };
+    var all = [prefix, first, last];
+    for (var i = 0; i < all.length; i++){
+      if (all[i] && !NAME_OK.test(all[i])) return { error: "ชื่อใช้ได้เฉพาะตัวอักษรไทยหรืออังกฤษ ห้ามมีตัวเลขหรือสัญลักษณ์" };
+    }
+    return { full: prefix + first + " " + last, first: first, last: last };
+  }
+  $("prefix").addEventListener("change", function(){
+    $("customWrap").hidden = ($("prefix").value !== "__custom");
+  });
+
+  /* ---------- สลับข้อ ---------- */
+  function shuffle(a){
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function newAttempt(){
+    state.order = shuffle(T.questions.map(function(_, i){ return i; })).map(function(qi){
+      var q = T.questions[qi];
+      var ch = shuffle(q.choices.map(function(text, ci){ return { text: text, ok: ci === q.answer }; }));
+      return { q: q.q, choices: ch };
+    });
+    state.answers = new Array(total).fill(null);
+    state.idx = 0;
+    $("quizErr").textContent = "";
+    renderQ();
+    show("s-quiz");
+  }
+
+  function renderQ(){
+    var q = state.order[state.idx];
+    $("qNo").textContent = "ข้อ " + (state.idx + 1) + " จาก " + total;
+    var done = state.answers.filter(function(a){ return a !== null; }).length;
+    $("qAnswered").textContent = "ตอบแล้ว " + done + " ข้อ";
+    $("bar").style.width = (done / total * 100) + "%";
+    $("qText").textContent = q.q;
+    var box = $("choices"); box.innerHTML = "";
+    q.choices.forEach(function(c, i){
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "choice";
+      b.setAttribute("aria-pressed", state.answers[state.idx] === i ? "true" : "false");
+      var tag = document.createElement("span"); tag.className = "tag"; tag.textContent = LETTERS[i];
+      var tx = document.createElement("span"); tx.textContent = c.text;
+      b.appendChild(tag); b.appendChild(tx);
+      b.addEventListener("click", function(){
+        state.answers[state.idx] = i; $("quizErr").textContent = ""; renderQ();
+      });
+      box.appendChild(b);
+    });
+    var last = state.idx === total - 1;
+    $("prevBtn").disabled = state.idx === 0;
+    $("nextBtn").textContent = last ? "ส่งคำตอบ" : "ข้อถัดไป";
+    $("nextBtn").className = last ? "btn gold" : "btn";
+    renderDots();
+  }
+  function renderDots(missing){
+    var d = $("dots"); d.innerHTML = "";
+    state.answers.forEach(function(a, i){
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = i + 1;
+      b.className = "dot" + (a !== null ? " done" : "") + (i === state.idx ? " cur" : "") + (missing && a === null ? " miss" : "");
+      b.setAttribute("aria-label", "ไปข้อ " + (i + 1) + (a !== null ? " ตอบแล้ว" : " ยังไม่ได้ตอบ"));
+      b.addEventListener("click", function(){ state.idx = i; renderQ(); });
+      d.appendChild(b);
+    });
+  }
+  $("prevBtn").addEventListener("click", function(){ if (state.idx > 0){ state.idx--; renderQ(); } });
+  $("nextBtn").addEventListener("click", function(){
+    if (state.idx < total - 1){ state.idx++; renderQ(); return; }
+    var miss = [];
+    state.answers.forEach(function(a, i){ if (a === null) miss.push(i + 1); });
+    if (miss.length){
+      $("quizErr").textContent = "ยังไม่ได้ตอบข้อ " + miss.join(", ") + " กดเลขข้อด้านล่างเพื่อไปตอบ";
+      renderDots(true);
+      return;
+    }
+    submit();
+  });
+
+  /* ---------- ตรวจคำตอบ ---------- */
+  function submit(){
+    var c = 0;
+    state.order.forEach(function(q, i){ if (q.choices[state.answers[i]].ok) c++; });
+    state.correct = c;
+    var pct = Math.round(c / total * 100);
+    var pass = c >= need;
+    show("s-result");
+    $("resScore").innerHTML = "ตอบถูก <b class='" + (pass ? "good" : "bad") + "'>" + c + " จาก " + total + " ข้อ</b> (" + pct + "%)";
+    $("failBox").hidden = pass; $("passBox").hidden = !pass;
+    if (pass){
+      $("resTitle").textContent = "ผ่านเกณฑ์แล้ว ขอแสดงความยินดี";
+      $("resNote").textContent = "ตรวจสอบชื่อบนเกียรติบัตร แล้วกดดาวน์โหลดได้เลย";
+      $("confirm").checked = false;
+      $("editBox").hidden = true; $("editBtn").textContent = "แก้ไขชื่อ";
+      $("nameSlotResult").appendChild($("nameFields"));
+      buildCert();
+    } else {
+      $("resTitle").textContent = "ยังไม่ผ่านเกณฑ์";
+      $("resNote").textContent = "ต้องตอบถูกอย่างน้อย " + need + " ข้อ (" + T.passPercent + "%) ทบทวนเนื้อหาแล้วลองใหม่ได้เลย ข้อและตัวเลือกจะสลับลำดับใหม่ทุกครั้ง";
+    }
+  }
+
+  /* ---------- เกียรติบัตร ---------- */
+  var baseImg = null;
+  function loadBase(){
+    if (baseImg) return Promise.resolve(baseImg);
+    return new Promise(function(res, rej){
+      var im = new Image();
+      im.onload = function(){ baseImg = im; res(im); };
+      im.onerror = function(){ rej(new Error("โหลดรูปเกียรติบัตรไม่สำเร็จ")); };
+      im.src = "topics/" + topicId + "/" + T.certificate.image;
+    });
+  }
+  var FAMILY = '"Sarabun","Noto Sans Thai","Tahoma",sans-serif';
+  function ensureFont(sample){
+    var jobs = [];
+    try {
+      jobs.push(document.fonts.load(T.certificate.weight + " 100px Sarabun", sample));
+      jobs.push(document.fonts.load(T.certificate.weight + " 100px Sarabun", T.certificate.referenceName));
+    } catch(e){}
+    return Promise.all(jobs).then(function(){ return document.fonts.ready; }).catch(function(){});
+  }
+  function drawCert(name){
+    return Promise.all([loadBase(), ensureFont(name)]).then(function(r){
+      var img = r[0], cc = T.certificate;
+      var c = document.createElement("canvas");
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      var x = c.getContext("2d");
+      x.drawImage(img, 0, 0);
+      var W = c.width, H = c.height;
+      x.font = cc.weight + " 100px " + FAMILY;
+      var refW = x.measureText(cc.referenceName).width;
+      var size = 100 * (cc.referenceWidth * W) / refW;
+      x.font = cc.weight + " " + size + "px " + FAMILY;
+      var w = x.measureText(name).width, maxW = cc.maxWidth * W;
+      if (w > maxW){ size *= maxW / w; x.font = cc.weight + " " + size + "px " + FAMILY; }
+      /* คำนวณจุดเริ่มเอง ไม่พึ่ง textAlign=center (iPad Safari วาดเลื่อนไปทางขวา) */
+      x.textAlign = "left"; x.textBaseline = "alphabetic"; x.fillStyle = cc.color;
+      var finalW = x.measureText(name).width;
+      x.fillText(name, cc.centerX * W - finalW / 2, cc.baselineY * H);
+      return c;
+    });
+  }
+  function setDownloads(on){ $("dlPng").disabled = !on; $("dlPdf").disabled = !on; }
+  function updateDl(){ setDownloads(!!state.pngBlob && $("confirm").checked && $("certBusy").hidden); }
+
+  function buildCert(){
+    var n = readName();
+    if (n.error) return;
+    var token = ++state.renderToken;
+    state.pngBlob = null; state.canvas = null;
+    $("certBusy").hidden = false; $("dlErr").textContent = "";
+    $("certName").textContent = n.full;
+    updateDl();
+    drawCert(n.full).then(function(c){
+      if (token !== state.renderToken) return;
+      c.toBlob(function(blob){
+        if (token !== state.renderToken) return;
+        if (!blob){ $("dlErr").textContent = "สร้างเกียรติบัตรไม่สำเร็จ ลองกดแก้ไขชื่อแล้วลองอีกครั้ง"; return; }
+        if (state.pngUrl) URL.revokeObjectURL(state.pngUrl);
+        state.canvas = c; state.pngBlob = blob; state.pngUrl = URL.createObjectURL(blob);
+        state.name = n;
+        $("certImg").src = state.pngUrl;
+        $("certBusy").hidden = true;
+        updateDl();
+      }, "image/png");
+    }).catch(function(e){
+      if (token !== state.renderToken) return;
+      $("certBusy").hidden = true;
+      $("dlErr").textContent = (e && e.message) || "สร้างเกียรติบัตรไม่สำเร็จ";
+    });
+  }
+
+  var editTimer = null;
+  function onNameEdit(){
+    $("confirm").checked = false;
+    state.pngBlob = null; updateDl();
+    clearTimeout(editTimer);
+    var n = readName();
+    $("nameErr").textContent = n.error || "";
+    if (n.error) return;
+    editTimer = setTimeout(buildCert, 450);
+  }
+  ["prefix","customPrefix","first","last"].forEach(function(id){
+    $(id).addEventListener("input", function(){ if (!$("s-result").hidden) onNameEdit(); });
+    $(id).addEventListener("change", function(){ if (!$("s-result").hidden) onNameEdit(); });
+  });
+  $("editBtn").addEventListener("click", function(){
+    var open = $("editBox").hidden;
+    $("editBox").hidden = !open;
+    $("editBtn").textContent = open ? "ปิดช่องแก้ไขชื่อ" : "แก้ไขชื่อ";
+    if (open) $("first").focus();
+  });
+  $("confirm").addEventListener("change", updateDl);
+
+  function fileBase(){
+    var n = state.name;
+    var safe = function(s){ return s.replace(/[\\\/:*?"<>|]/g, "").replace(/\s+/g, "_"); };
+    return (T.fileName || "certificate") + "_" + safe(n.first) + "_" + safe(n.last);
+  }
+  function save(blob, filename){
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+    setTimeout(function(){ a.remove(); URL.revokeObjectURL(url); }, 4000);
+  }
+  $("dlPng").addEventListener("click", function(){
+    if (!state.pngBlob) return;
+    save(state.pngBlob, fileBase() + ".png");
+  });
+  $("dlPdf").addEventListener("click", function(){
+    if (!state.canvas) return;
+    var c = state.canvas;
+    $("dlErr").textContent = "";
+    try {
+      c.toBlob(function(jpg){
+        if (!jpg){ $("dlErr").textContent = "สร้าง PDF ไม่สำเร็จ ลองดาวน์โหลดเป็น PNG แทน"; return; }
+        jpg.arrayBuffer().then(function(buf){
+          var pdf = buildPdf(new Uint8Array(buf), c.width, c.height);
+          save(new Blob([pdf], { type: "application/pdf" }), fileBase() + ".pdf");
+        });
+      }, "image/jpeg", 0.95);
+    } catch(e){ $("dlErr").textContent = "สร้าง PDF ไม่สำเร็จ ลองดาวน์โหลดเป็น PNG แทน"; }
+  });
+
+  /* PDF 1 หน้า: ฝังรูป JPEG เต็มหน้า (ไม่ต้องใช้ไลบรารีภายนอก) */
+  function buildPdf(jpg, w, h){
+    var enc = new TextEncoder(), parts = [], len = 0, offs = [];
+    function push(x){ var b = typeof x === "string" ? enc.encode(x) : x; parts.push(b); len += b.length; }
+    var pw = 841.89, ph = +(pw * h / w).toFixed(2);
+    push("%PDF-1.4\n");
+    offs[1] = len; push("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+    offs[2] = len; push("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+    offs[3] = len; push("3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + pw + " " + ph + "] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\nendobj\n");
+    offs[4] = len;
+    push("4 0 obj\n<< /Type /XObject /Subtype /Image /Width " + w + " /Height " + h + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + jpg.length + " >>\nstream\n");
+    push(jpg); push("\nendstream\nendobj\n");
+    var content = "q " + pw + " 0 0 " + ph + " 0 0 cm /Im0 Do Q";
+    offs[5] = len; push("5 0 obj\n<< /Length " + content.length + " >>\nstream\n" + content + "\nendstream\nendobj\n");
+    var xref = len;
+    var x = "xref\n0 6\n0000000000 65535 f \n";
+    for (var i = 1; i <= 5; i++) x += ("0000000000" + offs[i]).slice(-10) + " 00000 n \n";
+    push(x + "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF");
+    var out = new Uint8Array(len), p = 0;
+    parts.forEach(function(b){ out.set(b, p); p += b.length; });
+    return out;
+  }
+
+  /* ---------- ปุ่มหลัก ---------- */
+  $("startBtn").addEventListener("click", function(){
+    var n = readName();
+    $("nameErr").textContent = n.error || "";
+    if (n.error) return;
+    newAttempt();
+  });
+  $("retryBtn").addEventListener("click", newAttempt);
+  $("homeBtn").addEventListener("click", function(){
+    $("nameSlotStart").appendChild($("nameFields"));
+    show("s-start");
+  });
+}
+})();
+</script>
+</body>
+</html>

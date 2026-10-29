@@ -55,6 +55,30 @@ input[type=file]{width:100%;padding:10px;border:1.5px dashed #9db3a4;border-radi
 .steps{padding-left:22px;margin:8px 0}
 .steps li{margin:6px 0}
 .warn{background:#fff7e0;border:1px solid #ecd48a;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:.95rem}
+header h1{display:flex;align-items:center;gap:8px}
+.tabs{display:flex;gap:8px;padding:12px 16px 0;max-width:860px;margin:0 auto}
+.tabbtn{flex:1;min-height:48px;font:inherit;font-weight:700;border:2px solid var(--emerald);border-radius:12px;background:#fff;color:var(--emerald);cursor:pointer}
+.tabbtn[aria-selected=true]{background:var(--emerald);color:#fff}
+.mrow{border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;background:#fff}
+.mrow.off{background:#f1f3f1}
+.mhead{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;margin-bottom:8px}
+.mhead small{color:var(--muted)}
+.pill{display:inline-block;padding:1px 10px;border-radius:99px;font-size:.85rem;font-weight:700;background:var(--leaf);color:var(--emerald)}
+.pill.off{background:#e3e6e3;color:#5a6a60}
+.mbtns{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.mgrid{display:grid;gap:0 12px;grid-template-columns:1fr}
+@media(min-width:640px){.mgrid{grid-template-columns:1fr 1fr}}
+.mgrid label{font-size:.9rem;margin:8px 0 2px}
+.colors{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 12px;margin-top:8px}
+@media(min-width:640px){.colors{grid-template-columns:repeat(3,1fr)}}
+.colors label{font-size:.9rem;margin:0 0 2px}
+.colors input[type=color]{width:100%}
+.tprev{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tprev .h{padding:16px}
+.tprev .h b{display:block;font-size:1.15rem}
+.tprev .h span{font-size:.95rem}
+.tprev .b{padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.tprev .b i{font-style:normal;color:#fff;font-weight:700;padding:8px 16px;border-radius:10px}
 details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center}
 </style>
 </head>
@@ -76,8 +100,13 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
 
 <!-- เครื่องมือ -->
 <div id="tool" hidden>
-  <header><h1>สร้างหัวข้อแบบทดสอบใหม่</h1><p>ทำตาม 4 ขั้น แล้วอัปโหลดไฟล์ที่ได้ขึ้น GitHub</p></header>
+  <header><h1>แอดมินแบบทดสอบวันสำคัญ</h1><p>สร้างหัวข้อใหม่ และจัดการกิจกรรมที่มีอยู่ แล้วอัปโหลดไฟล์ที่ได้ขึ้น GitHub</p></header>
+  <nav class="tabs" role="tablist">
+    <button class="tabbtn" type="button" role="tab" data-tab="build" aria-selected="true">สร้างหัวข้อใหม่</button>
+    <button class="tabbtn" type="button" role="tab" data-tab="manage" aria-selected="false">จัดการกิจกรรม</button>
+  </nav>
   <main>
+  <div id="paneBuild">
 
     <section class="card">
       <h2>ขั้นที่ 1 รูปเกียรติบัตรเปล่า</h2>
@@ -162,6 +191,24 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
 โดยคณะกรรมการสภานักเรียน โรงเรียนศีขรภูมิพิสัย ประจำปีการศึกษา 2569</textarea>
       <label for="pass">เกณฑ์ผ่าน (เปอร์เซ็นต์)</label>
       <input type="number" id="pass" min="1" max="100" value="80" style="max-width:140px">
+      <label for="themeSel">ธีมสี (สีหน้าเว็บของกิจกรรมนี้ ไม่เกี่ยวกับสีเกียรติบัตร)</label>
+      <select id="themeSel"></select>
+      <div class="colors">
+        <div><label for="cForest">สีส่วนหัว</label><input type="color" id="cForest"></div>
+        <div><label for="cEmerald">สีปุ่มหลัก</label><input type="color" id="cEmerald"></div>
+        <div><label for="cGold">สีปุ่มดาวน์โหลดและเส้นเน้น</label><input type="color" id="cGold"></div>
+        <div><label for="cLeaf">สีอ่อนของตัวเลือก</label><input type="color" id="cLeaf"></div>
+        <div><label for="cBg">สีพื้นหลังหน้า</label><input type="color" id="cBg"></div>
+        <div><label for="cSub">สีวันที่ในส่วนหัว</label><input type="color" id="cSub"></div>
+      </div>
+      <label for="tIcon">ไอคอนหน้าหัวข้อ (อีโมจิ เว้นว่างได้)</label>
+      <input type="text" id="tIcon" maxlength="4" style="max-width:140px">
+      <div class="tprev" id="tprev" aria-label="ตัวอย่างธีม">
+        <div class="h" id="tpH"><div id="tpI" style="font-size:2rem;line-height:1"></div><b id="tpT">ตอบปัญหาออนไลน์</b><span id="tpD">4 ธันวาคม พ.ศ. 2569</span></div>
+        <div class="b" id="tpB"><i id="tpP">เริ่มทำข้อสอบ</i><i id="tpG">ดาวน์โหลด PNG</i></div>
+      </div>
+      <p class="hint" id="tpWarn"></p>
+      <label class="check"><input type="checkbox" id="lockNew">ล็อกไว้ก่อน (นักเรียนยังทำไม่ได้ จนกว่าจะปลดล็อกในแท็บจัดการกิจกรรม)</label>
     </section>
 
     <section class="card">
@@ -182,6 +229,28 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
         <p class="hint" id="openUrl"></p>
       </div>
     </section>
+
+  </div>
+
+  <div id="paneManage" hidden>
+    <section class="card">
+      <h2>จัดการกิจกรรม</h2>
+      <p class="sub">เลื่อนลำดับ ล็อก/ปลดล็อก ตั้งเวลาเปิด-ปิด แก้ชื่อ วันที่ และธีมสี จากนั้นกดสร้างไฟล์ topics.json แล้วอัปโหลดทับไฟล์เดิม (รอ 1-2 นาทีจึงมีผล)</p>
+      <div class="warn">การล็อกเป็นแค่การปิดหน้าทำข้อสอบสำหรับนักเรียนทั่วไป ไม่ใช่ระบบรักษาความปลอดภัยเต็มรูปแบบ ผู้ที่เก่งคอมยังเปิดไฟล์ข้อสอบตรงๆ ได้ และเวลาเปิด-ปิดอิงนาฬิกาในเครื่องของนักเรียนแต่ละคน</div>
+      <div id="mList"><p class="hint">กำลังโหลดรายการ…</p></div>
+      <p class="err" id="mErr" role="alert"></p>
+      <div class="row">
+        <button class="btn gold" type="button" id="mGen">สร้างไฟล์ topics.json</button>
+        <button class="btn alt" type="button" id="mReload">โหลดรายการใหม่จากเว็บ</button>
+      </div>
+      <div id="mOut" hidden>
+        <p class="ok">สร้างไฟล์เรียบร้อย</p>
+        <ol class="steps"><li>กดดาวน์โหลด topics.json</li><li>อัปโหลดไปที่ลิงก์ด้านล่าง ทับไฟล์เดิม แล้วกด Commit changes</li><li>รอ 1-2 นาที แล้วรีเฟรชหน้าเว็บ</li></ol>
+        <div id="mWarn"></div>
+        <div id="mFile"></div>
+      </div>
+    </section>
+  </div>
 
     <section class="card">
       <details>
@@ -463,7 +532,7 @@ function repoInfo(){
 }
 function buildConfig(f){
   var obj = {
-    id: f.id, pageTitle: "ตอบปัญหา" + f.shortName, title: f.title, dateText: f.dateText, intro: f.intro,
+    id: f.id, pageTitle: "ตอบปัญหา" + f.shortName, title: f.title, dateText: f.dateText, theme: getTheme(), intro: f.intro,
     passPercent: f.pass, fileName: "เกียรติบัตร_" + f.shortName.replace(/\s+/g, "_"),
     certificate: {
       image: "certificate.png",
@@ -524,9 +593,14 @@ $("genBtn").addEventListener("click", function(){
   $("genBtn").disabled = true;
   Promise.all([certBlob(), loadTopicsList()]).then(function(r){
     var png = r[0], list = r[1], data = list.data;
-    data.topics = (data.topics || []).filter(function(t){ return t.id !== f.id; });
-    var existed = (r[1].data.topics || []).length !== data.topics.length;
-    data.topics.push({ id: f.id, title: f.title, dateText: f.dateText });
+    var cur = data.topics || [], idx = -1;
+    cur.forEach(function(t, i){ if (t.id === f.id) idx = i; });
+    var existed = idx >= 0;
+    var entry = existed ? Object.assign({}, cur[idx]) : { id: f.id };
+    entry.title = f.title; entry.dateText = f.dateText; entry.theme = getTheme();
+    if ($("lockNew").checked) entry.locked = true;
+    if (existed) cur[idx] = entry; else cur.unshift(entry);
+    data.topics = cur;
     var cfgBlob = new Blob([buildConfig(f)], { type: "text/javascript" });
     var jsonBlob = new Blob([JSON.stringify(data, null, 2) + "\n"], { type: "application/json" });
     var info = repoInfo(), box = $("files"); box.innerHTML = "";
@@ -537,7 +611,7 @@ $("genBtn").addEventListener("click", function(){
     var wb = $("warnBox"); wb.innerHTML = "";
     function warn(t){ var d = document.createElement("div"); d.className = "warn"; d.textContent = t; wb.appendChild(d); }
     if (!list.found) warn("ไม่พบรายการกิจกรรมเดิมจากเว็บ (อาจเปิดหน้านี้จากในเครื่อง ไม่ได้เปิดผ่านลิงก์ github.io) ไฟล์ topics.json ที่ได้มีเฉพาะหัวข้อนี้ หากอัปโหลดจะทับรายการเดิม ให้เปิดหน้านี้ผ่านลิงก์เว็บจริงแล้วสร้างใหม่");
-    if (existed) warn("มีหัวข้อชื่อ " + f.id + " อยู่แล้ว ไฟล์ใหม่จะทับของเดิม");
+    if (existed) warn("มีหัวข้อชื่อ " + f.id + " อยู่แล้ว ไฟล์ใหม่จะทับของเดิม (ตำแหน่ง การล็อก และเวลาเปิด-ปิดเดิมคงไว้)");
     if (!info) warn("เปิดหน้านี้ผ่านลิงก์ github.io เพื่อให้มีลิงก์อัปโหลดสำเร็จรูป");
     var url = new URL("index.html?t=" + encodeURIComponent(f.id), location.href).href;
     $("openLink").href = url; $("openUrl").textContent = "ลิงก์สำหรับแจกนักเรียน: " + url.replace(/index\.html/, "");
@@ -545,6 +619,163 @@ $("genBtn").addEventListener("click", function(){
     $("outBox").scrollIntoView({ behavior: "smooth", block: "start" });
   }).catch(function(e){ err.textContent = (e && e.message) || "สร้างไฟล์ไม่สำเร็จ"; })
     .then(function(){ $("genBtn").disabled = false; });
+});
+
+/* ---------- ธีมสี ---------- */
+var PRESETS = {
+  forest:      { name: "เขียวธรรมชาติ (ค่าเริ่มต้น)", icon: "🌿", forest: "#123d27", emerald: "#1f6b45", leaf: "#e6f0e8", gold: "#966a12", bg: "#f3f6f3", heroSub: "#f0d98a" },
+  halloween:   { name: "ฮาโลวีน", icon: "🎃", forest: "#1c1230", emerald: "#b85400", leaf: "#f7e9da", gold: "#a85a00", bg: "#f6f1f8", heroSub: "#ffb454" },
+  valentine:   { name: "วาเลนไทน์", icon: "💝", forest: "#6e0f31", emerald: "#c2185b", leaf: "#fce4ec", gold: "#a8325a", bg: "#fdf4f6", heroSub: "#ffc2d1" },
+  christmas:   { name: "คริสต์มาส", icon: "🎄", forest: "#14452f", emerald: "#b3202a", leaf: "#fdecea", gold: "#8a6a12", bg: "#f7f5ef", heroSub: "#f0d98a" },
+  loykrathong: { name: "ลอยกระทง", icon: "🪔", forest: "#2b1b52", emerald: "#5b3fa6", leaf: "#eee8fa", gold: "#946000", bg: "#f6f3fb", heroSub: "#ffd98a" },
+  songkran:    { name: "สงกรานต์ (น้ำ)", icon: "💦", forest: "#0b3d6b", emerald: "#0b72a8", leaf: "#e1f1fa", gold: "#0b7f81", bg: "#f1f7fb", heroSub: "#bfe6ff" },
+  fathers:     { name: "วันพ่อ (เหลือง)", icon: "🌻", forest: "#5e4400", emerald: "#8a6100", leaf: "#fdf3d0", gold: "#7a5200", bg: "#fbf8ef", heroSub: "#ffe38a" },
+  mothers:     { name: "วันแม่ (ฟ้า)", icon: "💙", forest: "#1c4a78", emerald: "#2a67a8", leaf: "#e6f0fa", gold: "#8a6a1c", bg: "#f3f7fb", heroSub: "#cfe4ff" }
+};
+var CIDS = { forest: "cForest", emerald: "cEmerald", gold: "cGold", leaf: "cLeaf", bg: "cBg", heroSub: "cSub" };
+function themeOf(preset){ var o = {}, p = PRESETS[preset]; ["forest","emerald","leaf","gold","bg","heroSub","icon"].forEach(function(k){ o[k] = p[k]; }); return o; }
+function getTheme(){
+  var o = {}; Object.keys(CIDS).forEach(function(k){ o[k] = $(CIDS[k]).value; });
+  o.icon = clean($("tIcon").value.trim());
+  return o;
+}
+function setTheme(th){ Object.keys(CIDS).forEach(function(k){ $(CIDS[k]).value = th[k]; }); $("tIcon").value = th.icon || ""; drawThemePreview(); }
+function lum(hex){ var n = parseInt(hex.slice(1), 16), c = [n >> 16 & 255, n >> 8 & 255, n & 255].map(function(v){ v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+function contrast(a, b){ var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+function matchPreset(th){
+  var hit = "custom";
+  Object.keys(PRESETS).forEach(function(k){ var p = PRESETS[k]; if (["forest","emerald","leaf","gold","bg","heroSub"].every(function(f){ return (th[f] || "").toLowerCase() === p[f]; })) hit = k; });
+  return hit;
+}
+function drawThemePreview(){
+  var th = getTheme();
+  $("tpH").style.background = th.forest; $("tpH").style.color = "#fff";
+  $("tpD").style.color = th.heroSub; $("tpI").textContent = th.icon;
+  $("tprev").style.background = th.bg;
+  $("tpP").style.background = th.emerald; $("tpG").style.background = th.gold;
+  var bad = [];
+  if (contrast("#ffffff", th.emerald) < 4.5) bad.push("ปุ่มหลัก");
+  if (contrast("#ffffff", th.gold) < 4.5) bad.push("ปุ่มดาวน์โหลด");
+  if (contrast("#ffffff", th.forest) < 4.5) bad.push("ส่วนหัว");
+  if (contrast(th.heroSub, th.forest) < 3) bad.push("วันที่ในส่วนหัว");
+  $("tpWarn").textContent = bad.length ? "สีของ " + bad.join(", ") + " อ่านยาก ลองเลือกสีเข้มขึ้นหรืออ่อนลง" : "";
+  var m = matchPreset(th); if ($("themeSel").value !== m) $("themeSel").value = m;
+}
+(function(){
+  var s = $("themeSel");
+  Object.keys(PRESETS).forEach(function(k){ var o = document.createElement("option"); o.value = k; o.textContent = PRESETS[k].icon + " " + PRESETS[k].name; s.appendChild(o); });
+  var c = document.createElement("option"); c.value = "custom"; c.textContent = "กำหนดสีเอง"; s.appendChild(c);
+  s.addEventListener("change", function(){ if (PRESETS[s.value]) setTheme(themeOf(s.value)); });
+  Object.keys(CIDS).forEach(function(k){ $(CIDS[k]).addEventListener("input", drawThemePreview); });
+  $("tIcon").addEventListener("input", drawThemePreview);
+  setTheme(themeOf("forest"));
+})();
+
+/* ---------- แท็บ ---------- */
+var M = { data: null, loaded: false };
+document.querySelectorAll(".tabbtn").forEach(function(b){
+  b.addEventListener("click", function(){
+    var m = this.getAttribute("data-tab");
+    $("paneBuild").hidden = m !== "build"; $("paneManage").hidden = m !== "manage";
+    document.querySelectorAll(".tabbtn").forEach(function(x){ x.setAttribute("aria-selected", x === b ? "true" : "false"); });
+    if (m === "manage" && !M.loaded) loadManage();
+    window.scrollTo(0, 0);
+  });
+});
+
+/* ---------- จัดการกิจกรรม ---------- */
+var STAT = { open: "เปิดรับ", locked: "ล็อกอยู่", notyet: "ยังไม่ถึงเวลาเปิด", closed: "หมดเวลาแล้ว" };
+function mStatus(t){
+  if (t.locked) return "locked";
+  var now = Date.now(), o = Date.parse(t.opensAt || ""), c = Date.parse(t.closesAt || "");
+  if (!isNaN(o) && now < o) return "notyet";
+  if (!isNaN(c) && now >= c) return "closed";
+  return "open";
+}
+function loadManage(){
+  $("mList").innerHTML = '<p class="hint">กำลังโหลดรายการ…</p>'; $("mErr").textContent = ""; $("mOut").hidden = true;
+  loadTopicsList().then(function(r){
+    M.data = r.data; M.loaded = true; M.data.topics = M.data.topics || [];
+    renderManage();
+    if (!r.found) $("mErr").textContent = "ไม่พบรายการจากเว็บ (เปิดหน้านี้จากในเครื่องหรือยังไม่มี topics.json) อัปโหลดไฟล์ที่สร้างจากหน้านี้จะทับรายการเดิมทั้งหมด";
+  });
+}
+function mk(tag, props, kids){
+  var e = document.createElement(tag);
+  Object.keys(props || {}).forEach(function(k){ if (k === "text") e.textContent = props[k]; else if (k === "cls") e.className = props[k]; else e.setAttribute(k, props[k]); });
+  (kids || []).forEach(function(c){ e.appendChild(c); });
+  return e;
+}
+function field(label, input){ var d = mk("div", {}, [mk("label", { text: label }), input]); return d; }
+function renderManage(){
+  var box = $("mList"); box.innerHTML = "";
+  var list = M.data.topics;
+  if (!list.length){ box.appendChild(mk("p", { cls: "hint", text: "ยังไม่มีกิจกรรมในรายการ" })); return; }
+  list.forEach(function(t, i){
+    var st = mStatus(t), row = mk("div", { cls: "mrow" + (st === "open" ? "" : " off") });
+    var head = mk("div", { cls: "mhead" }, [
+      mk("b", { text: ((t.theme && t.theme.icon) ? t.theme.icon + " " : "") + t.title }),
+      mk("small", { text: "ลำดับที่ " + (i + 1) + " | " + t.id }),
+      mk("span", { cls: "pill" + (st === "open" ? "" : " off"), text: STAT[st] })
+    ]);
+    row.appendChild(head);
+    var btns = mk("div", { cls: "mbtns" });
+    function btn(text, fn, dis, alt){
+      var b = mk("button", { type: "button", cls: "btn sm" + (alt === false ? "" : " alt"), text: text }); b.disabled = !!dis;
+      b.addEventListener("click", fn); btns.appendChild(b); return b;
+    }
+    btn("▲ ขึ้น", function(){ list.splice(i - 1, 0, list.splice(i, 1)[0]); renderManage(); }, i === 0);
+    btn("ลง ▼", function(){ list.splice(i + 1, 0, list.splice(i, 1)[0]); renderManage(); }, i === list.length - 1);
+    btn(t.locked ? "ปลดล็อก" : "ล็อก", function(){ t.locked = !t.locked; renderManage(); }, false, !!t.locked ? false : true);
+    var a = mk("a", { cls: "btn alt sm", href: new URL("index.html?t=" + encodeURIComponent(t.id) + "&preview=1", location.href).href, target: "_blank", rel: "noopener", text: "ทดสอบ" });
+    btns.appendChild(a);
+    btn("นำออกจากรายการ", function(){
+      if (confirm("นำ \"" + t.title + "\" ออกจากรายการหน้ารวม? (ไฟล์ข้อสอบในโฟลเดอร์ topics/" + t.id + " ยังอยู่ ไม่ถูกลบ)")){ list.splice(i, 1); renderManage(); }
+    });
+    row.appendChild(btns);
+    var grid = mk("div", { cls: "mgrid" });
+    var ti = mk("input", { type: "text", value: t.title }); ti.addEventListener("input", function(){ t.title = ti.value; });
+    var di = mk("input", { type: "text", value: t.dateText || "" }); di.addEventListener("input", function(){ t.dateText = di.value; });
+    var oi = mk("input", { type: "datetime-local", value: (t.opensAt || "").slice(0, 16) });
+    oi.addEventListener("change", function(){ t.opensAt = oi.value ? oi.value + ":00+07:00" : ""; renderManage(); });
+    var ci = mk("input", { type: "datetime-local", value: (t.closesAt || "").slice(0, 16) });
+    ci.addEventListener("change", function(){ t.closesAt = ci.value ? ci.value + ":00+07:00" : ""; renderManage(); });
+    var ts = mk("select");
+    var cur = t.theme ? matchPreset(t.theme) : "none";
+    if (cur === "none" || cur === "custom") ts.appendChild(mk("option", { value: cur, text: cur === "none" ? "ใช้ธีมในไฟล์ข้อสอบ" : "กำหนดสีเอง (คงไว้)" }));
+    Object.keys(PRESETS).forEach(function(k){ ts.appendChild(mk("option", { value: k, text: PRESETS[k].icon + " " + PRESETS[k].name })); });
+    ts.value = cur;
+    ts.addEventListener("change", function(){ if (PRESETS[ts.value]){ t.theme = themeOf(ts.value); renderManage(); } });
+    grid.appendChild(field("ชื่อกิจกรรมที่แสดง", ti));
+    grid.appendChild(field("วันที่ที่แสดง", di));
+    grid.appendChild(field("เปิดรับตั้งแต่ (เวลาไทย) เว้นว่าง = เปิดทันที", oi));
+    grid.appendChild(field("ปิดรับเมื่อ (เวลาไทย) เว้นว่าง = ไม่ปิด", ci));
+    grid.appendChild(field("ธีมสี", ts));
+    row.appendChild(grid);
+    box.appendChild(row);
+  });
+}
+$("mReload").addEventListener("click", loadManage);
+$("mGen").addEventListener("click", function(){
+  var err = $("mErr"); err.textContent = "";
+  if (!M.data) return err.textContent = "ยังโหลดรายการไม่เสร็จ";
+  var out = JSON.parse(JSON.stringify(M.data));
+  for (var i = 0; i < out.topics.length; i++){
+    var t = out.topics[i];
+    if (!clean((t.title || "")).trim()) return err.textContent = "ลำดับที่ " + (i + 1) + ": ชื่อกิจกรรมว่างอยู่";
+    t.title = clean(t.title.trim()); t.dateText = clean((t.dateText || "").trim());
+    if (!t.locked) delete t.locked;
+    if (!t.opensAt) delete t.opensAt;
+    if (!t.closesAt) delete t.closesAt;
+    if (!t.dateText) delete t.dateText;
+    if (t.opensAt && t.closesAt && Date.parse(t.closesAt) <= Date.parse(t.opensAt)) return err.textContent = "\"" + t.title + "\": เวลาปิดรับต้องหลังเวลาเปิดรับ";
+  }
+  var blob = new Blob([JSON.stringify(out, null, 2) + "\n"], { type: "application/json" });
+  var info = repoInfo(), box = $("mFile"); box.innerHTML = "";
+  box.appendChild(fileRow("topics.json", info ? info.base + "/topics" : null, "topics", blob));
+  $("mWarn").innerHTML = "";
+  if (!info) $("mWarn").appendChild(mk("div", { cls: "warn", text: "เปิดหน้านี้ผ่านลิงก์ github.io เพื่อให้มีลิงก์อัปโหลดสำเร็จรูป" }));
+  $("mOut").hidden = false; $("mOut").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 /* ---------- เปลี่ยนรหัสผ่าน ---------- */
