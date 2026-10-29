@@ -315,14 +315,14 @@
       "theme": {
         "forest": "#3a2a14",
         "emerald": "#8a4b1f",
-        "leaf": "#f8ece0",
         "gold": "#8a5a12",
+        "leaf": "#f8ece0",
         "bg": "#faf6f1",
         "heroSub": "#ffd9a0",
         "icon": "🎨"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "world-water-day",
