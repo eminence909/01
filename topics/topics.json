@@ -59,14 +59,14 @@
       "theme": {
         "forest": "#12305e",
         "emerald": "#1f4f9a",
-        "leaf": "#e5edf9",
         "gold": "#8a6a12",
+        "leaf": "#e5edf9",
         "bg": "#f3f6fb",
         "heroSub": "#ffe08a",
         "icon": "🏛️"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "christmas-day",
