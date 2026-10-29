@@ -81,6 +81,15 @@ header h1{display:flex;align-items:center;gap:8px}
 .tprev .b{padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
 .tprev .b i{font-style:normal;color:#fff;font-weight:700;padding:8px 16px;border-radius:10px}
 details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center}
+
+.ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px}
+.ov .pv{background:#fff;border-radius:16px;max-width:640px;width:100%;overflow:hidden;margin:auto}
+.pv .ph{padding:18px 20px;color:#fff}.pv .ph h3{margin:0;font-size:1.15rem}.pv .ph small{display:block;margin-top:4px}
+.pv .pb{padding:16px 20px}.pv .pc{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border:1.5px solid #9db3a4;border-radius:10px;background:#fff;font:inherit;cursor:pointer}
+.pv .pc.ok{background:#e3f4e8;border-color:#2e7d4f}.pv .pc.no{background:#fde8e8;border-color:#c62828}
+.pv canvas{width:100%;height:auto;border:1px solid #ccc;border-radius:8px}
+.warn2{color:#8a5a00;background:#fff7e0;border:1px solid #ecd48a;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:.95rem;list-style:none}
+.hl{display:flex;gap:8px;align-items:center;justify-content:space-between;border-bottom:1px solid #dde4df;padding:8px 0;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -215,6 +224,7 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
 
     <section class="card">
       <h2>ขั้นที่ 4 สร้างไฟล์</h2>
+      <button class="btn alt" type="button" id="pvBtn">ลองทำข้อสอบ / ดูตัวอย่างก่อนเผยแพร่</button>
       <button class="btn gold" type="button" id="genBtn">สร้างไฟล์</button>
       <p class="err" id="genErr" role="alert"></p>
       <div id="outBox" hidden>
@@ -255,6 +265,20 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
         <div id="mFile"></div>
         <div class="file"><b>เผยแพร่ด้วยปุ่มเดียว</b><div class="dest">อัปโหลด topics.json ขึ้น GitHub ให้เอง (ต้องเชื่อมต่อ GitHub ก่อน)</div><button class="btn sm" type="button" id="mPub">เผยแพร่ขึ้น GitHub เลย</button><p class="hint" id="mPubMsg" role="status"></p></div>
       </div>
+    </section>
+    <section class="card">
+      <h2>ย้อนกลับเวอร์ชัน (เมื่อแก้พลาด)</h2>
+      <p class="sub">เลือกไฟล์ที่เคยเผยแพร่ แล้วดูประวัติการแก้ไขจาก GitHub กู้คืนเวอร์ชันเก่าได้ทันที (ต้องเชื่อมต่อ GitHub) การกู้คืนจะเป็นการบันทึกครั้งใหม่ ประวัติเดิมไม่หาย</p>
+      <label class="lbl" for="rbFile">ไฟล์</label><select id="rbFile"></select>
+      <div class="row"><button class="btn alt sm" type="button" id="rbList">ดูประวัติ</button></div>
+      <p class="hint" id="rbMsg" role="status"></p><div id="rbBox"></div>
+    </section>
+    <section class="card">
+      <h2>สำรองข้อมูลทั้งระบบ</h2>
+      <p class="sub">ดาวน์โหลดไฟล์เดียวเก็บรายการกิจกรรม ธีม ข้อสอบ+เฉลยทุกหัวข้อ (รูปเกียรติบัตรไม่รวมในไฟล์ เพราะใหญ่ รูปยังอยู่ใน GitHub) ถ้าข้อมูลพัง เลือกไฟล์สำรองเพื่อกู้คืนขึ้น GitHub</p>
+      <div class="row"><button class="btn alt sm" type="button" id="bkDl">ดาวน์โหลดไฟล์สำรอง</button>
+      <label class="btn alt sm" for="bkFile" style="cursor:pointer">กู้คืนจากไฟล์สำรอง</label><input type="file" id="bkFile" accept=".json,application/json" hidden></div>
+      <p class="hint" id="bkMsg" role="status"></p>
     </section>
   </div>
 
@@ -518,6 +542,19 @@ function parseExam(text){
   return { questions: out, errors: errs };
 }
 var EX = { questions: [], errors: [] };
+function examWarnings(dist, n){
+  var w = [], seen = {};
+  EX.questions.forEach(function(q, i){
+    var k = q.q.replace(/\s+/g, "").toLowerCase();
+    if (seen[k] != null) w.push("ข้อ " + (i + 1) + " ซ้ำกับข้อ " + (seen[k] + 1)); else seen[k] = i;
+    var cs = {}; q.choices.forEach(function(c, j){ var x = c.replace(/\s+/g, "").toLowerCase(); if (cs[x] != null) w.push("ข้อ " + (i + 1) + " ตัวเลือก " + LET[cs[x]] + " กับ " + LET[j] + " ซ้ำกัน"); else cs[x] = j; });
+    if (q.choices.length < 3) w.push("ข้อ " + (i + 1) + " มีตัวเลือกน้อยกว่า 3 ตัว");
+  });
+  var mx = 0, mk = ""; Object.keys(dist).forEach(function(k){ if (dist[k] > mx){ mx = dist[k]; mk = k; } });
+  if (n >= 6 && mx / n > 0.6) w.push("เฉลย " + mk + " มี " + mx + " จาก " + n + " ข้อ ดูกระจุกเกินไป ตรวจเฉลยอีกครั้ง (ระบบสลับตัวเลือกให้ผู้สอบอยู่แล้ว แต่เฉลยที่ผิดอาจมาจากการวางเฉลยผิด)");
+  if (n > 0 && n < 5) w.push("มีข้อสอบแค่ " + n + " ข้อ ตรวจว่าครบหรือยัง");
+  return w;
+}
 function renderExam(){
   var txt = $("exam").value;
   var ul = $("examErrs"), ol = $("qlist"); ul.innerHTML = ""; ol.innerHTML = "";
@@ -528,6 +565,7 @@ function renderExam(){
   EX.questions.forEach(function(q){ if (q.answer >= 0) dist[LET[q.answer]] = (dist[LET[q.answer]] || 0) + 1; });
   var ds = Object.keys(dist).sort().map(function(k){ return k + " " + dist[k]; }).join("  ");
   $("examSummary").textContent = "พบ " + n + " ข้อ" + (ds ? " | จำนวนเฉลยแต่ละตัว: " + ds : "");
+  examWarnings(dist, n).forEach(function(w){ var li = document.createElement("li"); li.className = "warn2"; li.textContent = "⚠ " + w; ul.appendChild(li); });
   EX.questions.forEach(function(q, i){
     var li = document.createElement("li");
     var t = document.createElement("div"); t.textContent = (i + 1) + ". " + q.q; t.style.fontWeight = "600"; li.appendChild(t);
@@ -765,6 +803,7 @@ function mk(tag, props, kids){
 }
 function field(label, input){ var d = mk("div", {}, [mk("label", { text: label }), input]); return d; }
 function renderManage(){
+  try { fillRollbackOptions(); } catch(_){}
   var box = $("mList"); box.innerHTML = "";
   var list = M.data.topics;
   if (!list.length){ box.appendChild(mk("p", { cls: "hint", text: "ยังไม่มีกิจกรรมในรายการ" })); return; }
@@ -789,6 +828,7 @@ function renderManage(){
     var a = mk("a", { cls: "btn alt sm", href: new URL("index.html?t=" + encodeURIComponent(t.id) + "&preview=1", location.href).href, target: "_blank", rel: "noopener", text: "ทดสอบ" });
     if (!t.draft) btns.appendChild(a);
     btn(t.draft ? "เพิ่มข้อสอบ/เกียรติบัตร" : "แก้ไขข้อสอบ/เกียรติบัตร", function(){ editTopic(t.id, t); });
+    btn("ทำซ้ำ", function(){ editTopic(t.id, t, true); });
     btn("QR", function(){ M.qrOpen = (M.qrOpen === t.id ? null : t.id); renderManage(); });
     btn("นำออกจากรายการ", function(){
       if (confirm("นำ \"" + t.title + "\" ออกจากรายการหน้ารวม? (ไฟล์ข้อสอบในโฟลเดอร์ topics/" + t.id + " ยังอยู่ ไม่ถูกลบ)")){ list.splice(i, 1); renderManage(); }
@@ -1041,7 +1081,7 @@ function examToText(qs){
     return ["ข้อ " + (i + 1) + ". " + q.q].concat(q.choices.map(function(c, k){ return LET[k] + ". " + c; }), ["เฉลย: " + LET[q.answer] + ". " + q.choices[q.answer]]).join("\n");
   }).join("\n");
 }
-function editTopic(id, entry){
+function editTopic(id, entry, dup){
   var st = $("mErr"); st.textContent = "กำลังโหลดหัวข้อ " + id + "…";
   function fill(T, im){
     var c = T.certificate || {};
@@ -1059,6 +1099,11 @@ function editTopic(id, entry){
     $("exam").value = T.questions && T.questions.length ? examToText(T.questions) : ""; renderExam();
     $("lockNew").checked = false;
     $("editId").textContent = id; $("editBanner").hidden = false; $("outBox").hidden = true;
+    if (dup){
+      $("topicId").readOnly = false; $("topicId").value = ""; $("exam").value = ""; renderExam();
+      $("title").value = ""; $("dateText").value = ""; $("shortName").value = ""; titleTouched = false;
+      $("editBanner").hidden = true; $("lockNew").checked = true;
+    }
     document.querySelector('[data-tab=build]').click();
     st.textContent = "";
   }
@@ -1081,6 +1126,161 @@ function editTopic(id, entry){
     .catch(function(e){ st.textContent = "โหลดหัวข้อไม่สำเร็จ: " + e.message; });
 }
 $("editCancel").addEventListener("click", function(){ location.reload(); });
+
+
+/* ---------- ตัวอย่าง/ลองทำข้อสอบ ---------- */
+function pvCert(name){
+  var im = S.img, W = 1000, H = Math.round(W * im.naturalHeight / im.naturalWidth);
+  var c = document.createElement("canvas"); c.width = W; c.height = H;
+  var x = c.getContext("2d"); x.drawImage(im, 0, 0, W, H);
+  var wt = $("weight").value, L = layout(x, W, name, wt);
+  x.textAlign = "left"; x.textBaseline = "alphabetic"; x.fillStyle = $("color").value;
+  x.fillText(name, S.cx * W - L.w / 2, S.by * H);
+  return c;
+}
+function mkEl(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+$("pvBtn").addEventListener("click", function(){
+  var err = $("genErr"); err.textContent = "";
+  if (!EX.questions.length) return err.textContent = "ขั้นที่ 2: ยังไม่มีข้อสอบให้ลองทำ";
+  if (EX.errors.length) return err.textContent = "ขั้นที่ 2: แก้ข้อผิดพลาดของข้อสอบก่อน";
+  var th = getTheme(), qs = EX.questions, pass = parseInt($("pass").value, 10) || 80, need = Math.ceil(qs.length * pass / 100);
+  var ov = mkEl("div", "ov"), box = mkEl("div", "pv"); ov.appendChild(box);
+  var head = mkEl("div", "ph"); head.style.background = th.forest;
+  head.appendChild(mkEl("h3", "", (th.icon ? th.icon + " " : "") + ($("title").value || "(ยังไม่ได้ตั้งหัวข้อ)")));
+  var sm = mkEl("small", "", $("dateText").value || ""); sm.style.color = th.heroSub; head.appendChild(sm);
+  var body = mkEl("div", "pb"); box.appendChild(head); box.appendChild(body);
+  document.body.appendChild(ov);
+  var i = 0, score = 0;
+  function close(){ ov.remove(); }
+  function result(){
+    body.innerHTML = "";
+    var ok = score >= need;
+    body.appendChild(mkEl("h3", "", "ได้ " + score + " / " + qs.length + " (ต้องได้ " + need + " ข้อขึ้นไป) " + (ok ? "ผ่าน" : "ยังไม่ผ่าน")));
+    if (ok){
+      if (S.img){
+        var nm = mkEl("input"); nm.type = "text"; nm.value = clean($("sample").value.trim()) || REF_NAME; nm.style.width = "100%"; nm.style.margin = "8px 0";
+        var holder = mkEl("div"); function r(){ holder.innerHTML = ""; holder.appendChild(pvCert(clean(nm.value.trim()) || REF_NAME)); }
+        nm.addEventListener("input", r); body.appendChild(mkEl("p", "hint", "ตัวอย่างเกียรติบัตร (พิมพ์ชื่ออื่นเพื่อลองชื่อยาวได้)")); body.appendChild(nm); body.appendChild(holder); r();
+      } else body.appendChild(mkEl("p", "hint", "ยังไม่มีรูปเกียรติบัตร"));
+    }
+    var b1 = mkEl("button", "btn alt sm", "ลองใหม่"); b1.type = "button"; b1.addEventListener("click", function(){ i = 0; score = 0; show(); });
+    var b2 = mkEl("button", "btn sm", "ปิด"); b2.type = "button"; b2.addEventListener("click", close);
+    var row = mkEl("div", "mbtns"); row.appendChild(b1); row.appendChild(b2); body.appendChild(row);
+  }
+  function show(){
+    if (i >= qs.length) return result();
+    body.innerHTML = ""; var q = qs[i], done = false;
+    body.appendChild(mkEl("p", "hint", "ข้อ " + (i + 1) + " / " + qs.length));
+    body.appendChild(mkEl("p", "", q.q));
+    q.choices.forEach(function(c, k){
+      var b = mkEl("button", "pc", LET[k] + ". " + c); b.type = "button";
+      b.addEventListener("click", function(){
+        if (done) return; done = true;
+        if (k === q.answer){ score++; b.classList.add("ok"); } else b.classList.add("no");
+        var nx = mkEl("button", "btn sm", i + 1 >= qs.length ? "ดูผล" : "ข้อถัดไป"); nx.type = "button"; nx.addEventListener("click", function(){ i++; show(); });
+        body.appendChild(nx);
+      });
+      body.appendChild(b);
+    });
+    var sk = mkEl("button", "btn alt sm", "ข้ามไปดูผลแบบตอบถูกหมด"); sk.type = "button"; sk.addEventListener("click", function(){ score = qs.length; i = qs.length; result(); });
+    var cl = mkEl("button", "btn alt sm", "ปิด"); cl.type = "button"; cl.addEventListener("click", close);
+    var row = mkEl("div", "mbtns"); row.appendChild(sk); row.appendChild(cl); body.appendChild(row);
+  }
+  show();
+});
+
+/* ---------- ย้อนกลับเวอร์ชัน ---------- */
+function b64ToBlob(b64, type){
+  var bin = atob(b64.replace(/\s/g, "")), arr = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: type || "application/octet-stream" });
+}
+function fillRollbackOptions(){
+  var s = $("rbFile"), keep = s.value; s.innerHTML = "";
+  function o(v, t){ var e = document.createElement("option"); e.value = v; e.textContent = t; s.appendChild(e); }
+  o("topics/topics.json", "รายการกิจกรรม (topics.json)");
+  ((M.data && M.data.topics) || []).forEach(function(t){
+    if (t.draft) return;
+    o("topics/" + t.id + "/config.js", t.title + " – ข้อสอบ/เฉลย (config.js)");
+    if (!t.noCert) o("topics/" + t.id + "/certificate.png", t.title + " – รูปเกียรติบัตร");
+  });
+  if (keep) s.value = keep;
+}
+$("rbList").addEventListener("click", function(){
+  var m = $("rbMsg"), box = $("rbBox"); box.innerHTML = "";
+  if (!ghReady()){ m.className = "err"; m.textContent = "ต้องเชื่อมต่อ GitHub ก่อน (หัวข้อ \"เชื่อมต่อ GitHub\" ท้ายหน้า)"; $("ghDet").open = true; return; }
+  var path = $("rbFile").value; if (!path){ m.className = "err"; m.textContent = "เลือกไฟล์ก่อน"; return; }
+  m.className = "hint"; m.textContent = "กำลังโหลดประวัติ…";
+  fetch("https://api.github.com/repos/" + GH.owner + "/" + GH.repo + "/commits?path=" + encodeURIComponent(path) + "&sha=" + encodeURIComponent(GH.branch) + "&per_page=15", { headers: ghHeaders(), cache: "no-store" })
+    .then(function(r){ if (!r.ok) return r.json().catch(function(){ return {}; }).then(function(j){ throw new Error(ghErr(r.status, j)); }); return r.json(); })
+    .then(function(list){
+      if (!list.length){ m.textContent = "ไม่พบประวัติของไฟล์นี้"; return; }
+      m.textContent = "พบ " + list.length + " รายการ (ใหม่สุดอยู่บน) เลือกรายการที่ต้องการกู้คืน";
+      list.forEach(function(c, idx){
+        var row = mkEl("div", "hl"), left = mkEl("div");
+        var d = new Date(c.commit.author.date);
+        left.appendChild(mkEl("b", "", d.toLocaleString("th-TH", { dateStyle: "medium", timeStyle: "short" }) + (idx === 0 ? " (ปัจจุบัน)" : "")));
+        left.appendChild(mkEl("div", "hint", (c.commit.message || "").split("\n")[0]));
+        row.appendChild(left);
+        if (idx > 0){
+          var b = mkEl("button", "btn gold sm", "กู้คืนเวอร์ชันนี้"); b.type = "button";
+          b.addEventListener("click", function(){ restoreVersion(path, c.sha, d); });
+          row.appendChild(b);
+        }
+        box.appendChild(row);
+      });
+    }).catch(function(e){ m.className = "err"; m.textContent = "โหลดประวัติไม่สำเร็จ: " + e.message; });
+});
+function restoreVersion(path, sha, d){
+  var m = $("rbMsg");
+  if (!confirm("กู้คืน " + path + " กลับเป็นเวอร์ชันเมื่อ " + d.toLocaleString("th-TH") + " ?")) return;
+  m.className = "hint"; m.textContent = "กำลังกู้คืน…";
+  fetch(ghUrl(path) + "?ref=" + encodeURIComponent(sha), { headers: ghHeaders(), cache: "no-store" })
+    .then(function(r){ if (!r.ok) return r.json().catch(function(){ return {}; }).then(function(j){ throw new Error(ghErr(r.status, j)); }); return r.json(); })
+    .then(function(j){
+      if (j.content) return j.content;
+      return fetch("https://api.github.com/repos/" + GH.owner + "/" + GH.repo + "/git/blobs/" + j.sha, { headers: ghHeaders() })
+        .then(function(r){ if (!r.ok) throw new Error("โหลดไฟล์เวอร์ชันเก่าไม่สำเร็จ"); return r.json(); }).then(function(b){ return b.content; });
+    })
+    .then(function(b64){ return ghPut(path, b64ToBlob(b64, /\.png$/.test(path) ? "image/png" : "text/plain"), "ย้อนกลับเป็นเวอร์ชัน " + sha.slice(0, 7) + ": " + path); })
+    .then(function(){ m.className = "ok"; m.textContent = "กู้คืนเรียบร้อย รอ 1-2 นาทีแล้วรีเฟรชหน้าเว็บ"; })
+    .catch(function(e){ m.className = "err"; m.textContent = "กู้คืนไม่สำเร็จ: " + e.message; });
+}
+
+/* ---------- สำรอง/กู้คืนทั้งระบบ ---------- */
+$("bkDl").addEventListener("click", function(){
+  var m = $("bkMsg"); m.className = "hint"; m.textContent = "กำลังรวบรวมข้อมูล…";
+  loadTopicsList().then(function(r){
+    var topics = r.data.topics || [], configs = {}, chain = Promise.resolve();
+    topics.forEach(function(t){
+      if (t.draft) return;
+      chain = chain.then(function(){
+        return fetch("topics/" + encodeURIComponent(t.id) + "/config.js?v=" + Date.now(), { cache: "no-store" })
+          .then(function(x){ return x.ok ? x.text() : null; }).then(function(txt){ if (txt) configs[t.id] = txt; });
+      });
+    });
+    return chain.then(function(){
+      var out = { format: "quiz-backup", version: 1, created: new Date().toISOString(), list: r.data, configs: configs };
+      var d = new Date(), p = function(n){ return ("0" + n).slice(-2); };
+      save(new Blob([JSON.stringify(out, null, 2)], { type: "application/json" }), "quiz-backup-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + ".json");
+      m.className = "ok"; m.textContent = "ดาวน์โหลดแล้ว (" + Object.keys(configs).length + " หัวข้อที่มีข้อสอบ)";
+    });
+  }).catch(function(e){ m.className = "err"; m.textContent = "สำรองไม่สำเร็จ: " + e.message; });
+});
+$("bkFile").addEventListener("change", function(){
+  var f = this.files[0], m = $("bkMsg"); this.value = ""; if (!f) return;
+  var fr = new FileReader();
+  fr.onload = function(){
+    var j; try { j = JSON.parse(String(fr.result)); } catch(e){ j = null; }
+    if (!j || j.format !== "quiz-backup" || !j.list || !j.configs){ m.className = "err"; m.textContent = "ไฟล์นี้ไม่ใช่ไฟล์สำรองของระบบ"; return; }
+    var ids = Object.keys(j.configs);
+    if (!confirm("กู้คืนรายการกิจกรรมและข้อสอบ " + ids.length + " หัวข้อ จากไฟล์สำรองเมื่อ " + new Date(j.created).toLocaleString("th-TH") + " ขึ้น GitHub ทับของปัจจุบัน?")) return;
+    var files = ids.map(function(id){ return { path: "topics/" + id + "/config.js", blob: new Blob([j.configs[id]], { type: "text/javascript" }) }; });
+    files.push({ path: "topics/topics.json", blob: new Blob([JSON.stringify(j.list, null, 2) + "\n"], { type: "application/json" }) });
+    publish(files, m, $("bkDl"), "กู้คืนจากไฟล์สำรอง");
+  };
+  fr.readAsText(f);
+});
 
 /* ---------- เปลี่ยนรหัสผ่าน ---------- */
 var newAdminJs = null;
