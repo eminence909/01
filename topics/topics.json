@@ -18,7 +18,7 @@
         "heroSub": "#f0d98a",
         "icon": "🌿"
       },
-      "opensAt": "2026-12-04T00:00:00+07:00"
+      "opensAt": "2026-10-29T00:00:00+07:00"
     },
     {
       "id": "soil-day",
@@ -33,8 +33,7 @@
         "heroSub": "#e8c99a",
         "icon": "🌱"
       },
-      "opensAt": "2026-10-29T19:46:00+07:00",
-      "locked": true
+      "opensAt": "2026-10-29T19:46:00+07:00"
     },
     {
       "id": "fathers-day",
@@ -49,7 +48,8 @@
         "heroSub": "#ffe38a",
         "icon": "🌻"
       },
-      "locked": true
+      "locked": true,
+      "noCert": true
     },
     {
       "id": "constitution-day",
