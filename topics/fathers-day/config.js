@@ -20,9 +20,9 @@ window.QUIZ_TOPIC = {
   "passPercent": 80,
   "fileName": "เกียรติบัตร_วันพ่อแห่งชาติ",
   "certificate": {
-    "image": "",
-    "centerX": 0.5,
-    "baselineY": 0.5,
+    "image": "certificate.png",
+    "centerX": 0.521,
+    "baselineY": 0.466,
     "referenceName": "นางสาวรุจิกานต์ ปิ่นเพชร",
     "referenceWidth": 0.46,
     "maxWidth": 0.7,
