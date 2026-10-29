@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>แอดมิน สร้างหัวข้อแบบทดสอบ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--forest:#123d27;--emerald:#1f6b45;--leaf:#e6f0e8;--gold:#b8862b;--ink:#1b2620;--muted:#5a6a60;--line:#cfdcd2;--bg:#f3f6f3;--danger:#a63a2b;--font:"Sarabun","Noto Sans Thai","Tahoma",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.6}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+header{background:var(--forest);color:#fff;padding:22px 20px}
+header h1{margin:0;font-size:1.4rem;line-height:1.4}
+header p{margin:4px 0 0;color:#cfe3d6;font-size:.95rem}
+main{max-width:860px;margin:0 auto;padding:16px 16px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin:0 0 16px}
+h2{font-size:1.2rem;margin:0 0 4px;line-height:1.4}
+.sub{color:var(--muted);margin:0 0 14px;font-size:.95rem}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input[type=text],input[type=password],input[type=number],textarea,select{width:100%;min-height:46px;padding:9px 12px;font:inherit;color:var(--ink);background:#fff;border:1.5px solid #9db3a4;border-radius:10px}
+textarea{min-height:120px;resize:vertical;line-height:1.5}
+input[type=color]{width:60px;height:44px;border:1.5px solid #9db3a4;border-radius:10px;padding:2px;background:#fff}
+input[type=range]{width:100%;accent-color:var(--emerald)}
+input[type=file]{width:100%;padding:10px;border:1.5px dashed #9db3a4;border-radius:10px;background:var(--leaf);font:inherit}
+.hint{font-size:.9rem;color:var(--muted);margin:4px 0 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:8px 20px;font:inherit;font-weight:700;border-radius:12px;border:2px solid var(--emerald);background:var(--emerald);color:#fff;cursor:pointer;text-decoration:none}
+.btn.alt{background:#fff;color:var(--emerald)}
+.btn.gold{background:var(--gold);border-color:var(--gold)}
+.btn.sm{min-height:42px;padding:6px 14px;font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grid2{display:grid;gap:0 14px;grid-template-columns:1fr}
+@media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+.err{color:var(--danger);font-weight:600}
+.ok{color:var(--emerald);font-weight:600}
+.errs{margin:8px 0 0;padding-left:20px;color:var(--danger);font-size:.95rem}
+.stage{margin-top:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#e9eee9}
+.stage canvas{display:block;width:100%;height:auto;touch-action:none;cursor:crosshair}
+.tools{display:grid;gap:0 14px;grid-template-columns:1fr}
+@media(min-width:640px){.tools{grid-template-columns:1fr 1fr}}
+.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.check{display:flex;gap:10px;align-items:center;font-weight:400;margin-top:12px}
+.check input{width:22px;height:22px;accent-color:var(--emerald)}
+.qlist{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:8px;max-height:340px;overflow:auto}
+.qlist li{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.95rem}
+.qlist .good{color:var(--emerald);font-weight:700}
+.file{border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0;background:#fafcfa}
+.file b{display:block}
+.file .dest{font-size:.9rem;color:var(--muted);word-break:break-all;margin:4px 0 10px}
+.steps{padding-left:22px;margin:8px 0}
+.steps li{margin:6px 0}
+.warn{background:#fff7e0;border:1px solid #ecd48a;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:.95rem}
+details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center}
+</style>
+</head>
+<body>
+
+<!-- ล็อกอิน -->
+<div id="gate">
+  <header><h1>แอดมิน</h1><p>เฉพาะผู้ดูแลระบบ</p></header>
+  <main>
+    <form class="card" id="loginForm" autocomplete="off">
+      <h2>เข้าสู่ระบบ</h2>
+      <label for="pw">รหัสผ่าน</label>
+      <input type="password" id="pw" autocomplete="current-password">
+      <p class="err" id="loginErr" role="alert"></p>
+      <button class="btn" type="submit" id="loginBtn">เข้าสู่ระบบ</button>
+    </form>
+  </main>
+</div>
+
+<!-- เครื่องมือ -->
+<div id="tool" hidden>
+  <header><h1>สร้างหัวข้อแบบทดสอบใหม่</h1><p>ทำตาม 4 ขั้น แล้วอัปโหลดไฟล์ที่ได้ขึ้น GitHub</p></header>
+  <main>
+
+    <section class="card">
+      <h2>ขั้นที่ 1 รูปเกียรติบัตรเปล่า</h2>
+      <p class="sub">เลือกรูปที่ลบชื่อออกแล้ว (PNG หรือ JPG) จากนั้นแตะหรือลากบนรูปเพื่อวางตำแหน่งชื่อ</p>
+      <input type="file" id="certFile" accept="image/png,image/jpeg,image/webp">
+      <p class="hint" id="certInfo"></p>
+      <div id="designer" hidden>
+        <div class="stage"><canvas id="cv"></canvas></div>
+        <p class="hint">แตะหรือลากบนรูป จุดที่แตะคือกึ่งกลางชื่อ และเส้นล่างของตัวอักษร (เส้นแดงคือเส้นช่วยวาง จะไม่ติดไปกับเกียรติบัตรจริง)</p>
+        <div class="nudge">
+          <button class="btn alt sm" type="button" data-n="l">◀ ซ้าย</button>
+          <button class="btn alt sm" type="button" data-n="r">ขวา ▶</button>
+          <button class="btn alt sm" type="button" data-n="u">▲ ขึ้น</button>
+          <button class="btn alt sm" type="button" data-n="d">ลง ▼</button>
+        </div>
+        <div class="tools">
+          <div>
+            <label for="wRange">ขนาดตัวอักษร <span id="wVal"></span></label>
+            <input type="range" id="wRange" min="15" max="70" step="0.5" value="46">
+            <p class="hint">วัดจากความกว้างของชื่อตัวอย่าง "นางสาวรุจิกานต์ ปิ่นเพชร" ที่เป็นเปอร์เซ็นต์ของความกว้างรูป ใช้ค่าเดียวกับหัวข้อแรก (46) ได้ถ้าเกียรติบัตรเหมือนกัน ชื่อยาวกว่านี้ระบบย่อให้เองตอนใช้งาน</p>
+          </div>
+          <div>
+            <label for="sample">ชื่อตัวอย่างสำหรับดูตัวอย่าง</label>
+            <input type="text" id="sample" value="นางสาวรุจิกานต์ ปิ่นเพชร">
+            <p class="hint">เปลี่ยนเพื่อลองชื่อยาวหรือสั้น ไม่มีผลกับขนาดตัวอักษร</p>
+          </div>
+          <div>
+            <label for="weight">ความหนา</label>
+            <select id="weight"><option value="400">ปกติ</option><option value="600">กึ่งหนา</option><option value="700" selected>หนา</option></select>
+          </div>
+          <div>
+            <label for="color">สีตัวอักษร</label>
+            <input type="color" id="color" value="#000000">
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="guides" checked>แสดงเส้นช่วยวาง</label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>ขั้นที่ 2 ข้อสอบพร้อมเฉลย</h2>
+      <p class="sub">วางข้อสอบในรูปแบบนี้ ระบบจะแยกข้อและตรวจให้</p>
+      <textarea id="exam" placeholder="ข้อ 1. คำถาม&#10;ก. ตัวเลือก&#10;ข. ตัวเลือก&#10;ค. ตัวเลือก&#10;ง. ตัวเลือก&#10;เฉลย: ข. ตัวเลือกที่ถูก&#10;ข้อ 2. ..."></textarea>
+      <p id="examSummary" class="hint"></p>
+      <ul class="errs" id="examErrs"></ul>
+      <ol class="qlist" id="qlist" hidden></ol>
+      <details style="margin-top:12px">
+        <summary>ข้อความสำหรับให้ AI เขียนข้อสอบในรูปแบบนี้</summary>
+        <textarea id="aiPrompt" readonly style="min-height:210px">ช่วยเขียนข้อสอบปรนัยสำหรับนักเรียนมัธยม 10 ข้อ เรื่อง [ใส่หัวข้อ เช่น วันแม่แห่งชาติ] ข้อมูลต้องถูกต้อง แต่ละข้อมี 4 ตัวเลือก ตัวเลือกที่ถูกให้กระจายครบทั้ง ก ข ค ง ไม่ซ้ำตัวเลือกเดียวติดกัน ตอบตามรูปแบบนี้เท่านั้น ไม่ต้องมีคำอธิบายอื่น
+
+ข้อ 1. คำถาม
+ก. ตัวเลือก
+ข. ตัวเลือก
+ค. ตัวเลือก
+ง. ตัวเลือก
+เฉลย: ข. (คัดลอกข้อความของตัวเลือกที่ถูกมาทั้งหมด)</textarea>
+        <div class="row" style="margin-top:8px"><button class="btn alt sm" type="button" id="copyPrompt">คัดลอกข้อความ</button><span class="hint" id="copyMsg"></span></div>
+        <p class="hint">ตรวจเนื้อหาและเฉลยด้วยตัวเองทุกครั้งก่อนใช้งานจริง เพราะ AI อาจให้ข้อมูลผิดได้</p>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>ขั้นที่ 3 รายละเอียดกิจกรรม</h2>
+      <div class="grid2">
+        <div>
+          <label for="shortName">ชื่อกิจกรรมสั้นๆ</label>
+          <input type="text" id="shortName" placeholder="เช่น วันแม่แห่งชาติ">
+        </div>
+        <div>
+          <label for="topicId">ชื่อโฟลเดอร์ (อังกฤษ ตัวเล็ก ไม่เว้นวรรค)</label>
+          <input type="text" id="topicId" placeholder="เช่น mother-day" autocapitalize="none" autocorrect="off" spellcheck="false">
+          <p class="hint">ใช้ a-z, 0-9 และ - เท่านั้น ลิงก์จะเป็น ?t=ชื่อนี้</p>
+        </div>
+      </div>
+      <label for="title">หัวข้อหน้าแรก</label>
+      <input type="text" id="title" placeholder='ตอบปัญหาออนไลน์ "วันแม่แห่งชาติ"'>
+      <label for="dateText">วันที่ของกิจกรรม (แสดงใต้หัวข้อ)</label>
+      <input type="text" id="dateText" placeholder="12 สิงหาคม พ.ศ. 2570">
+      <p class="hint">วันที่บนเกียรติบัตรอยู่ในรูปเกียรติบัตรเอง ต้องแก้ในรูปก่อนอัปโหลด</p>
+      <label for="intro">ข้อความแนะนำ (หนึ่งบรรทัดต่อหนึ่งย่อหน้า)</label>
+      <textarea id="intro" style="min-height:90px">ภายใต้กิจกรรมตอบปัญหาออนไลน์ ขยายความรู้วันสำคัญ
+โดยคณะกรรมการสภานักเรียน โรงเรียนศีขรภูมิพิสัย ประจำปีการศึกษา 2569</textarea>
+      <label for="pass">เกณฑ์ผ่าน (เปอร์เซ็นต์)</label>
+      <input type="number" id="pass" min="1" max="100" value="80" style="max-width:140px">
+    </section>
+
+    <section class="card">
+      <h2>ขั้นที่ 4 สร้างไฟล์</h2>
+      <button class="btn gold" type="button" id="genBtn">สร้างไฟล์</button>
+      <p class="err" id="genErr" role="alert"></p>
+      <div id="outBox" hidden>
+        <p class="ok">สร้างไฟล์เรียบร้อย ทำตามนี้</p>
+        <ol class="steps">
+          <li>กดดาวน์โหลดไฟล์ทั้ง 3 ไฟล์ด้านล่าง</li>
+          <li>อัปโหลด <b>config.js</b> และ <b>certificate.png</b> ไปที่ลิงก์โฟลเดอร์หัวข้อ</li>
+          <li>อัปโหลด <b>topics.json</b> ไปที่ลิงก์โฟลเดอร์ topics (ทำเป็นอันสุดท้าย)</li>
+          <li>รอ 1-2 นาที แล้วเปิดลิงก์ทดสอบ ทำข้อสอบให้ผ่านสักรอบ</li>
+        </ol>
+        <div id="warnBox"></div>
+        <div id="files"></div>
+        <p><a class="btn alt" id="openLink" href="#" target="_blank" rel="noopener">เปิดดูหัวข้อนี้</a></p>
+        <p class="hint" id="openUrl"></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>เปลี่ยนรหัสผ่านแอดมิน</summary>
+        <label for="newPw">รหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)</label>
+        <input type="password" id="newPw" autocomplete="new-password">
+        <label for="newPw2">พิมพ์อีกครั้ง</label>
+        <input type="password" id="newPw2" autocomplete="new-password">
+        <p class="err" id="pwErr" role="alert"></p>
+        <button class="btn alt" type="button" id="pwBtn">สร้างไฟล์ admin.js ใหม่</button>
+        <div id="pwOut" hidden>
+          <div class="file"><b>admin.js</b><div class="dest" id="pwDest"></div><button class="btn gold sm" type="button" id="pwDl">ดาวน์โหลด admin.js</button></div>
+          <p class="hint">อัปโหลดไฟล์นี้ไปที่หน้าแรกของ repo (ที่เดียวกับ index.html) ทับไฟล์เดิม แล้วรอ 1-2 นาที รหัสใหม่จึงใช้ได้</p>
+        </div>
+      </details>
+    </section>
+  </main>
+</div>
+
+<script src="admin.js"></script>
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+
+/* ---------- SHA-256 (เขียนเอง ใช้ได้ทุกเบราว์เซอร์ แม้เปิดจากไฟล์ในเครื่อง) ---------- */
+var K = [], H0 = [];
+(function(){
+  var n = 2, c = 0;
+  while (c < 64){
+    var p = true;
+    for (var i = 2; i * i <= n; i++) if (n % i === 0){ p = false; break; }
+    if (p){ if (c < 8) H0[c] = (Math.pow(n, 0.5) % 1) * 4294967296 | 0; K[c] = (Math.pow(n, 1 / 3) % 1) * 4294967296 | 0; c++; }
+    n++;
+  }
+})();
+function sha256(bytes){
+  var l = bytes.length, bitLen = l * 8;
+  var padLen = ((l + 9 + 63) >> 6) << 6;
+  var m = new Uint8Array(padLen); m.set(bytes); m[l] = 0x80;
+  var dv = new DataView(m.buffer);
+  dv.setUint32(padLen - 4, bitLen >>> 0);
+  dv.setUint32(padLen - 8, Math.floor(bitLen / 4294967296));
+  var h = H0.slice(), w = new Array(64), i;
+  for (var o = 0; o < padLen; o += 64){
+    for (i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+    for (i = 16; i < 64; i++){
+      var a = w[i - 15], b = w[i - 2];
+      var s0 = ((a >>> 7) | (a << 25)) ^ ((a >>> 18) | (a << 14)) ^ (a >>> 3);
+      var s1 = ((b >>> 17) | (b << 15)) ^ ((b >>> 19) | (b << 13)) ^ (b >>> 10);
+      w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+    }
+    var A = h[0], B = h[1], C = h[2], D = h[3], E = h[4], F = h[5], G = h[6], Hh = h[7];
+    for (i = 0; i < 64; i++){
+      var S1 = ((E >>> 6) | (E << 26)) ^ ((E >>> 11) | (E << 21)) ^ ((E >>> 25) | (E << 7));
+      var ch = (E & F) ^ (~E & G);
+      var t1 = (Hh + S1 + ch + K[i] + w[i]) | 0;
+      var S0 = ((A >>> 2) | (A << 30)) ^ ((A >>> 13) | (A << 19)) ^ ((A >>> 22) | (A << 10));
+      var mj = (A & B) ^ (A & C) ^ (B & C);
+      var t2 = (S0 + mj) | 0;
+      Hh = G; G = F; F = E; E = (D + t1) | 0; D = C; C = B; B = A; A = (t1 + t2) | 0;
+    }
+    h[0] = (h[0] + A) | 0; h[1] = (h[1] + B) | 0; h[2] = (h[2] + C) | 0; h[3] = (h[3] + D) | 0;
+    h[4] = (h[4] + E) | 0; h[5] = (h[5] + F) | 0; h[6] = (h[6] + G) | 0; h[7] = (h[7] + Hh) | 0;
+  }
+  var out = new Uint8Array(32), od = new DataView(out.buffer);
+  for (i = 0; i < 8; i++) od.setUint32(i * 4, h[i]);
+  return out;
+}
+function hashPassword(pw, salt, rounds){
+  var enc = new TextEncoder(), sb = enc.encode(salt);
+  var d = sha256(enc.encode(salt + ":" + pw));
+  for (var i = 1; i < rounds; i++){
+    var t = new Uint8Array(d.length + sb.length); t.set(d); t.set(sb, d.length);
+    d = sha256(t);
+  }
+  var hex = ""; for (var j = 0; j < d.length; j++) hex += ("0" + d[j].toString(16)).slice(-2);
+  return hex;
+}
+window.__hashPassword = hashPassword; /* ใช้ตอนทดสอบ */
+
+/* ---------- ล็อกอิน ---------- */
+$("loginForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var A = window.ADMIN_AUTH;
+  $("loginErr").textContent = "";
+  if (!A || !A.hash){ $("loginErr").textContent = "ไม่พบไฟล์ admin.js ที่ตั้งรหัสผ่านไว้"; return; }
+  var btn = $("loginBtn"); btn.disabled = true;
+  setTimeout(function(){
+    var ok = hashPassword($("pw").value, A.salt, A.rounds) === A.hash;
+    if (ok){
+      $("pw").value = ""; $("gate").hidden = true; $("tool").hidden = false; window.scrollTo(0, 0);
+      fontReady().then(draw);
+    } else {
+      $("loginErr").textContent = "รหัสผ่านไม่ถูกต้อง";
+      setTimeout(function(){ btn.disabled = false; }, 1200);
+      return;
+    }
+    btn.disabled = false;
+  }, 30);
+});
+
+/* ---------- ตัวช่วย ---------- */
+var REF_NAME = "นางสาวรุจิกานต์ ปิ่นเพชร";
+var MAX_W = 0.70;
+var FAMILY = '"Sarabun","Noto Sans Thai","Tahoma",sans-serif';
+function fontReady(){
+  try {
+    return Promise.all([document.fonts.load("400 40px Sarabun", REF_NAME), document.fonts.load("600 40px Sarabun", REF_NAME), document.fonts.load("700 40px Sarabun", REF_NAME)])
+      .then(function(){ return document.fonts.ready; }).catch(function(){});
+  } catch(e){ return Promise.resolve(); }
+}
+function save(blob, filename){
+  var url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  setTimeout(function(){ a.remove(); URL.revokeObjectURL(url); }, 4000);
+}
+function clean(s){ return s.normalize("NFC").replace(/[​-‍﻿]/g, ""); }
+
+/* ---------- ขั้นที่ 1 ออกแบบตำแหน่งชื่อ ---------- */
+var S = { img: null, cx: 0.521, by: 0.466, width: 0.46 };
+var cv = $("cv"), ctx = cv.getContext("2d");
+
+$("certFile").addEventListener("change", function(){
+  var f = this.files && this.files[0];
+  if (!f) return;
+  var url = URL.createObjectURL(f), im = new Image();
+  im.onload = function(){
+    S.img = im; S.file = f;
+    $("certInfo").textContent = "รูปขนาด " + im.naturalWidth + " × " + im.naturalHeight + " พิกเซล" +
+      (im.naturalWidth < 2000 ? " (ความละเอียดค่อนข้างต่ำ ถ้า Canva ดาวน์โหลดขนาด 2x ได้ จะคมกว่า)" : "");
+    var pw = Math.min(1100, im.naturalWidth);
+    cv.width = pw; cv.height = Math.round(pw * im.naturalHeight / im.naturalWidth);
+    $("designer").hidden = false;
+    fontReady().then(draw);
+  };
+  im.onerror = function(){ $("certInfo").textContent = "เปิดรูปนี้ไม่ได้ ลองใช้ไฟล์ PNG หรือ JPG"; };
+  im.src = url;
+});
+
+function layout(c, W, name, weight){
+  c.font = weight + " 100px " + FAMILY;
+  var refW = c.measureText(REF_NAME).width;
+  var size = 100 * (S.width * W) / refW;
+  c.font = weight + " " + size + "px " + FAMILY;
+  var w = c.measureText(name).width, maxW = MAX_W * W;
+  if (w > maxW){ size *= maxW / w; c.font = weight + " " + size + "px " + FAMILY; w = c.measureText(name).width; }
+  return { size: size, w: w };
+}
+function draw(){
+  if (!S.img) return;
+  var W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.drawImage(S.img, 0, 0, W, H);
+  var name = clean($("sample").value.trim()) || REF_NAME;
+  var weight = $("weight").value;
+  var L = layout(ctx, W, name, weight);
+  ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = $("color").value;
+  ctx.fillText(name, S.cx * W - L.w / 2, S.by * H);
+  if ($("guides").checked){
+    ctx.save();
+    ctx.strokeStyle = "rgba(220,40,40,.85)"; ctx.lineWidth = Math.max(1, W / 900);
+    ctx.setLineDash([W / 100, W / 160]);
+    ctx.beginPath(); ctx.moveTo(S.cx * W - L.w / 2 - W * 0.03, S.by * H); ctx.lineTo(S.cx * W + L.w / 2 + W * 0.03, S.by * H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(S.cx * W, S.by * H - L.size); ctx.lineTo(S.cx * W, S.by * H + L.size * 0.4); ctx.stroke();
+    ctx.restore();
+  }
+  $("wVal").textContent = "(" + (S.width * 100).toFixed(1) + "%)";
+}
+function setFromPointer(e){
+  var r = cv.getBoundingClientRect();
+  S.cx = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+  S.by = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+  draw();
+}
+var dragging = false;
+cv.addEventListener("pointerdown", function(e){ dragging = true; try { cv.setPointerCapture(e.pointerId); } catch(_){} setFromPointer(e); e.preventDefault(); });
+cv.addEventListener("pointermove", function(e){ if (dragging) setFromPointer(e); });
+["pointerup","pointercancel"].forEach(function(t){ cv.addEventListener(t, function(){ dragging = false; }); });
+document.querySelectorAll("[data-n]").forEach(function(b){
+  b.addEventListener("click", function(){
+    var d = this.getAttribute("data-n"), st = 0.002;
+    if (d === "l") S.cx -= st; if (d === "r") S.cx += st; if (d === "u") S.by -= st; if (d === "d") S.by += st;
+    S.cx = Math.min(1, Math.max(0, S.cx)); S.by = Math.min(1, Math.max(0, S.by)); draw();
+  });
+});
+$("wRange").addEventListener("input", function(){ S.width = parseFloat(this.value) / 100; draw(); });
+["sample","weight","color","guides"].forEach(function(id){ $(id).addEventListener("input", draw); $(id).addEventListener("change", draw); });
+
+/* ---------- ขั้นที่ 2 แยกข้อสอบ ---------- */
+var LET = "กขคงจ";
+function parseExam(text){
+  text = text.replace(/\r/g, "").trim().replace(/^["“”]+/, "").replace(/["“”]+$/, "");
+  var lines = text.split("\n").map(function(s){ return clean(s).trim(); }).filter(Boolean);
+  var qs = [], cur = null, last = null, errs = [];
+  lines.forEach(function(l){
+    var m;
+    if ((m = l.match(/^เฉลย\s*[:：]?\s*([กขคงจ])\s*[.)]?\s*(.*)$/))){
+      if (!cur){ errs.push("มีเฉลยที่ไม่อยู่ในข้อใด: " + l.slice(0, 30)); return; }
+      cur.ansIdx = LET.indexOf(m[1]); cur.ansText = m[2].trim(); last = null; return;
+    }
+    if ((m = l.match(/^(?:ข้อ\s*)?(\d{1,3})\s*[.)．]\s*(.+)$/))){
+      cur = { n: qs.length + 1, srcNo: m[1], q: m[2].trim(), choices: [], letters: [], ansIdx: -1, ansText: "" };
+      qs.push(cur); last = { type: "q" }; return;
+    }
+    if ((m = l.match(/^([กขคงจ])\s*[.)．]\s*(.+)$/))){
+      if (!cur){ errs.push("มีตัวเลือกที่ไม่อยู่ในข้อใด: " + l.slice(0, 30)); return; }
+      cur.letters.push(m[1]); cur.choices.push(m[2].trim()); last = { type: "c" }; return;
+    }
+    if (cur && last){
+      if (last.type === "q") cur.q += " " + l;
+      else cur.choices[cur.choices.length - 1] += " " + l;
+      return;
+    }
+    errs.push("อ่านบรรทัดนี้ไม่ออก: " + l.slice(0, 40));
+  });
+  var out = [];
+  qs.forEach(function(q){
+    var tag = "ข้อ " + q.n + ": ";
+    var bad = false;
+    if (q.choices.length < 2 || q.choices.length > 5){ errs.push(tag + "ตัวเลือกต้องมี 2-5 ข้อ (พบ " + q.choices.length + ")"); bad = true; }
+    for (var i = 0; i < q.letters.length; i++) if (q.letters[i] !== LET[i]){ errs.push(tag + "ตัวเลือกต้องเรียง ก ข ค ง ตามลำดับ"); bad = true; break; }
+    if (q.ansIdx < 0){ errs.push(tag + "ไม่มีเฉลย"); bad = true; }
+    else if (q.ansIdx >= q.choices.length){ errs.push(tag + "เฉลยชี้ไปตัวเลือกที่ไม่มี"); bad = true; }
+    else if (q.ansText && q.ansText.replace(/\s+/g, "") !== q.choices[q.ansIdx].replace(/\s+/g, "")){
+      errs.push(tag + "ตัวอักษรเฉลย (" + LET[q.ansIdx] + ") กับข้อความเฉลยไม่ตรงกัน ตรวจสอบอีกครั้ง"); bad = true;
+    }
+    if (!q.q){ errs.push(tag + "ไม่มีคำถาม"); bad = true; }
+    out.push({ q: q.q, choices: q.choices, answer: q.ansIdx, bad: bad });
+  });
+  return { questions: out, errors: errs };
+}
+var EX = { questions: [], errors: [] };
+function renderExam(){
+  var txt = $("exam").value;
+  var ul = $("examErrs"), ol = $("qlist"); ul.innerHTML = ""; ol.innerHTML = "";
+  if (!txt.trim()){ EX = { questions: [], errors: [] }; $("examSummary").textContent = ""; ol.hidden = true; return; }
+  EX = parseExam(txt);
+  EX.errors.forEach(function(e){ var li = document.createElement("li"); li.textContent = e; ul.appendChild(li); });
+  var n = EX.questions.length, dist = {};
+  EX.questions.forEach(function(q){ if (q.answer >= 0) dist[LET[q.answer]] = (dist[LET[q.answer]] || 0) + 1; });
+  var ds = Object.keys(dist).sort().map(function(k){ return k + " " + dist[k]; }).join("  ");
+  $("examSummary").textContent = "พบ " + n + " ข้อ" + (ds ? " | จำนวนเฉลยแต่ละตัว: " + ds : "");
+  EX.questions.forEach(function(q, i){
+    var li = document.createElement("li");
+    var t = document.createElement("div"); t.textContent = (i + 1) + ". " + q.q; t.style.fontWeight = "600"; li.appendChild(t);
+    q.choices.forEach(function(c, k){
+      var d = document.createElement("div"); d.textContent = LET[k] + ". " + c;
+      if (k === q.answer){ d.className = "good"; d.textContent += "  ✔"; }
+      li.appendChild(d);
+    });
+    ol.appendChild(li);
+  });
+  ol.hidden = !n;
+}
+$("exam").addEventListener("input", renderExam);
+$("copyPrompt").addEventListener("click", function(){
+  var ta = $("aiPrompt");
+  function done(ok){ $("copyMsg").textContent = ok ? "คัดลอกแล้ว" : "คัดลอกไม่ได้ ให้กดค้างที่ข้อความแล้วเลือกคัดลอก"; }
+  try { navigator.clipboard.writeText(ta.value).then(function(){ done(true); }, function(){ ta.select(); done(document.execCommand("copy")); }); }
+  catch(e){ ta.select(); try { done(document.execCommand("copy")); } catch(_){ done(false); } }
+});
+
+/* ---------- ขั้นที่ 3 ---------- */
+var titleTouched = false;
+$("title").addEventListener("input", function(){ titleTouched = true; });
+$("shortName").addEventListener("input", function(){
+  if (!titleTouched) $("title").value = $("shortName").value.trim() ? 'ตอบปัญหาออนไลน์ "' + $("shortName").value.trim() + '"' : "";
+});
+
+/* ---------- ขั้นที่ 4 สร้างไฟล์ ---------- */
+function repoInfo(){
+  var h = location.hostname;
+  if (!/\.github\.io$/.test(h)) return null;
+  var owner = h.split(".")[0];
+  var seg = location.pathname.split("/").filter(Boolean)[0];
+  var repo = (seg && !/\.html?$/.test(seg)) ? seg : owner + ".github.io";
+  return { owner: owner, repo: repo, base: "https://github.com/" + owner + "/" + repo + "/upload/main" };
+}
+function buildConfig(f){
+  var obj = {
+    id: f.id, pageTitle: "ตอบปัญหา" + f.shortName, title: f.title, dateText: f.dateText, intro: f.intro,
+    passPercent: f.pass, fileName: "เกียรติบัตร_" + f.shortName.replace(/\s+/g, "_"),
+    certificate: {
+      image: "certificate.png",
+      centerX: +S.cx.toFixed(4), baselineY: +S.by.toFixed(4),
+      referenceName: REF_NAME, referenceWidth: +S.width.toFixed(4), maxWidth: MAX_W,
+      weight: parseInt($("weight").value, 10), color: $("color").value
+    },
+    questions: EX.questions.map(function(q){ return { q: q.q, choices: q.choices, answer: q.answer }; })
+  };
+  return "/* สร้างด้วยหน้าแอดมิน (" + f.id + ") */\nwindow.QUIZ_TOPIC = " + JSON.stringify(obj, null, 2) + ";\n";
+}
+function certBlob(){
+  return new Promise(function(res, rej){
+    var im = S.img, W = im.naturalWidth, H = im.naturalHeight;
+    if (W > 4000){ H = Math.round(H * 4000 / W); W = 4000; }
+    var c = document.createElement("canvas"); c.width = W; c.height = H;
+    c.getContext("2d").drawImage(im, 0, 0, W, H);
+    c.toBlob(function(b){ b ? res(b) : rej(new Error("แปลงรูปไม่สำเร็จ")); }, "image/png");
+  });
+}
+function loadTopicsList(){
+  return fetch("topics/topics.json?v=" + Date.now(), { cache: "no-store" })
+    .then(function(r){ if (!r.ok) throw new Error("x"); return r.json(); })
+    .then(function(j){ return { data: j, found: true }; })
+    .catch(function(){
+      return { found: false, data: { siteTitle: "ตอบปัญหาออนไลน์ ขยายความรู้วันสำคัญ", siteIntro: ["โดยคณะกรรมการสภานักเรียน โรงเรียนศีขรภูมิพิสัย ประจำปีการศึกษา 2569", "เลือกกิจกรรมที่ต้องการ ทำข้อสอบให้ผ่านเกณฑ์ แล้วรับเกียรติบัตรได้ทันที"], topics: [] } };
+    });
+}
+function fileRow(name, dest, destLabel, blob){
+  var d = document.createElement("div"); d.className = "file";
+  var b = document.createElement("b"); b.textContent = name; d.appendChild(b);
+  var p = document.createElement("div"); p.className = "dest";
+  if (dest){
+    p.appendChild(document.createTextNode("อัปโหลดไปที่: "));
+    var a = document.createElement("a"); a.href = dest; a.target = "_blank"; a.rel = "noopener"; a.textContent = dest; p.appendChild(a);
+  } else p.textContent = "อัปโหลดไปที่โฟลเดอร์: " + destLabel;
+  d.appendChild(p);
+  var btn = document.createElement("button"); btn.type = "button"; btn.className = "btn gold sm"; btn.textContent = "ดาวน์โหลด " + name;
+  btn.addEventListener("click", function(){ save(blob, name); });
+  d.appendChild(btn);
+  return d;
+}
+$("genBtn").addEventListener("click", function(){
+  var err = $("genErr"); err.textContent = "";
+  var f = {
+    id: $("topicId").value.trim(), shortName: clean($("shortName").value.trim()), title: clean($("title").value.trim()),
+    dateText: clean($("dateText").value.trim()), pass: parseInt($("pass").value, 10),
+    intro: $("intro").value.split("\n").map(function(s){ return clean(s).trim(); }).filter(Boolean)
+  };
+  if (!S.img) return err.textContent = "ขั้นที่ 1: ยังไม่ได้เลือกรูปเกียรติบัตร";
+  if (!EX.questions.length) return err.textContent = "ขั้นที่ 2: ยังไม่มีข้อสอบ";
+  if (EX.errors.length) return err.textContent = "ขั้นที่ 2: ข้อสอบยังมีข้อผิดพลาด " + EX.errors.length + " จุด แก้ตามข้อความสีแดงก่อน";
+  if (!f.shortName) return err.textContent = "ขั้นที่ 3: กรอกชื่อกิจกรรมสั้นๆ";
+  if (!/^[a-z0-9][a-z0-9-]{1,40}$/.test(f.id)) return err.textContent = "ขั้นที่ 3: ชื่อโฟลเดอร์ใช้ได้เฉพาะ a-z, 0-9 และ - (2-41 ตัว) ขึ้นต้นด้วยตัวอักษรหรือตัวเลข";
+  if (!f.title) return err.textContent = "ขั้นที่ 3: กรอกหัวข้อหน้าแรก";
+  if (!f.dateText) return err.textContent = "ขั้นที่ 3: กรอกวันที่ของกิจกรรม";
+  if (!(f.pass >= 1 && f.pass <= 100)) return err.textContent = "ขั้นที่ 3: เกณฑ์ผ่านต้องอยู่ระหว่าง 1-100";
+  $("genBtn").disabled = true;
+  Promise.all([certBlob(), loadTopicsList()]).then(function(r){
+    var png = r[0], list = r[1], data = list.data;
+    data.topics = (data.topics || []).filter(function(t){ return t.id !== f.id; });
+    var existed = (r[1].data.topics || []).length !== data.topics.length;
+    data.topics.push({ id: f.id, title: f.title, dateText: f.dateText });
+    var cfgBlob = new Blob([buildConfig(f)], { type: "text/javascript" });
+    var jsonBlob = new Blob([JSON.stringify(data, null, 2) + "\n"], { type: "application/json" });
+    var info = repoInfo(), box = $("files"); box.innerHTML = "";
+    var topicDest = info ? info.base + "/topics/" + f.id : null, listDest = info ? info.base + "/topics" : null;
+    box.appendChild(fileRow("config.js", topicDest, "topics/" + f.id, cfgBlob));
+    box.appendChild(fileRow("certificate.png", topicDest, "topics/" + f.id, png));
+    box.appendChild(fileRow("topics.json", listDest, "topics", jsonBlob));
+    var wb = $("warnBox"); wb.innerHTML = "";
+    function warn(t){ var d = document.createElement("div"); d.className = "warn"; d.textContent = t; wb.appendChild(d); }
+    if (!list.found) warn("ไม่พบรายการกิจกรรมเดิมจากเว็บ (อาจเปิดหน้านี้จากในเครื่อง ไม่ได้เปิดผ่านลิงก์ github.io) ไฟล์ topics.json ที่ได้มีเฉพาะหัวข้อนี้ หากอัปโหลดจะทับรายการเดิม ให้เปิดหน้านี้ผ่านลิงก์เว็บจริงแล้วสร้างใหม่");
+    if (existed) warn("มีหัวข้อชื่อ " + f.id + " อยู่แล้ว ไฟล์ใหม่จะทับของเดิม");
+    if (!info) warn("เปิดหน้านี้ผ่านลิงก์ github.io เพื่อให้มีลิงก์อัปโหลดสำเร็จรูป");
+    var url = new URL("index.html?t=" + encodeURIComponent(f.id), location.href).href;
+    $("openLink").href = url; $("openUrl").textContent = "ลิงก์สำหรับแจกนักเรียน: " + url.replace(/index\.html/, "");
+    $("outBox").hidden = false;
+    $("outBox").scrollIntoView({ behavior: "smooth", block: "start" });
+  }).catch(function(e){ err.textContent = (e && e.message) || "สร้างไฟล์ไม่สำเร็จ"; })
+    .then(function(){ $("genBtn").disabled = false; });
+});
+
+/* ---------- เปลี่ยนรหัสผ่าน ---------- */
+var newAdminJs = null;
+$("pwBtn").addEventListener("click", function(){
+  var a = $("newPw").value, b = $("newPw2").value, e = $("pwErr"); e.textContent = ""; $("pwOut").hidden = true;
+  if (a.length < 8) return e.textContent = "รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร";
+  if (a !== b) return e.textContent = "รหัสผ่านสองช่องไม่ตรงกัน";
+  var salt = "", arr = new Uint8Array(8);
+  if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(arr); else for (var i = 0; i < 8; i++) arr[i] = Math.floor(Math.random() * 256);
+  arr.forEach(function(v){ salt += ("0" + v.toString(16)).slice(-2); });
+  var hash = hashPassword(a, salt, 5000);
+  newAdminJs = "/* รหัสผ่านหน้าแอดมิน (เก็บเฉพาะค่าแฮช ไม่ได้เก็บรหัสจริง)\n   เปลี่ยนรหัสได้ในหน้า admin-builder.html > เปลี่ยนรหัสผ่าน แล้วอัปโหลดไฟล์ admin.js ที่ได้มาแทนไฟล์นี้ */\nwindow.ADMIN_AUTH = { salt: \"" + salt + "\", rounds: 5000, hash: \"" + hash + "\" };\n";
+  var info = repoInfo();
+  $("pwDest").textContent = info ? "อัปโหลดไปที่: " + info.base : "อัปโหลดไปที่หน้าแรกของ repo";
+  $("pwOut").hidden = false;
+});
+$("pwDl").addEventListener("click", function(){ if (newAdminJs) save(new Blob([newAdminJs], { type: "text/javascript" }), "admin.js"); });
+
+if (window.ADMIN_AUTH) $("pw").focus();
+})();
+</script>
+</body>
+</html>
