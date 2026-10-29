@@ -106,14 +106,14 @@
       "theme": {
         "forest": "#1a1a4d",
         "emerald": "#3a3fa8",
-        "leaf": "#e8e9fa",
         "gold": "#8a6a12",
+        "leaf": "#e8e9fa",
         "bg": "#f4f4fb",
         "heroSub": "#ffe08a",
         "icon": "🎆"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "forest-conservation-day",
