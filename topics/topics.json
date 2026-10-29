@@ -183,18 +183,18 @@
     {
       "id": "chinese-new-year",
       "title": "วันตรุษจีน",
-      "dateText": "กุมภาพันธ์ พ.ศ. 2570",
+      "dateText": "6 กุมภาพันธ์ พ.ศ. 2570",
       "theme": {
         "forest": "#7a0c0c",
         "emerald": "#c0281c",
-        "leaf": "#fdeaea",
         "gold": "#8a6000",
+        "leaf": "#fdeaea",
         "bg": "#fbf4f2",
         "heroSub": "#ffd36b",
         "icon": "🧧"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "makha-bucha-day",
