@@ -75,14 +75,14 @@
       "theme": {
         "forest": "#14452f",
         "emerald": "#b3202a",
-        "leaf": "#fdecea",
         "gold": "#8a6a12",
+        "leaf": "#fdecea",
         "bg": "#f7f5ef",
         "heroSub": "#f0d98a",
         "icon": "🎄"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "wildlife-protection-day",
