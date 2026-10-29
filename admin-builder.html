@@ -73,6 +73,7 @@ header h1{display:flex;align-items:center;gap:8px}
 @media(min-width:640px){.colors{grid-template-columns:repeat(3,1fr)}}
 .colors label{font-size:.9rem;margin:0 0 2px}
 .colors input[type=color]{width:100%}
+.qrbox{margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;text-align:center}.qrbox canvas{max-width:100%;height:auto}
 .tprev{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .tprev .h{padding:16px}
 .tprev .h b{display:block;font-size:1.15rem}
@@ -107,6 +108,7 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
   </nav>
   <main>
   <div id="paneBuild">
+    <div class="warn" id="editBanner" hidden>กำลังแก้ไขหัวข้อ <b id="editId"></b> (ชื่อโฟลเดอร์คงเดิม) แก้ไขแล้วกดสร้างไฟล์ ไฟล์ใหม่จะทับของเดิม ตำแหน่ง การล็อก และเวลาเปิด-ปิดเดิมคงไว้ <button class="btn alt sm" type="button" id="editCancel">ยกเลิกการแก้ไข</button></div>
 
     <section class="card">
       <h2>ขั้นที่ 1 รูปเกียรติบัตรเปล่า</h2>
@@ -227,6 +229,7 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
         <div id="files"></div>
         <p><a class="btn alt" id="openLink" href="#" target="_blank" rel="noopener">เปิดดูหัวข้อนี้</a></p>
         <p class="hint" id="openUrl"></p>
+        <div class="file" id="pubBox"><b>เผยแพร่ด้วยปุ่มเดียว</b><div class="dest">อัปโหลดทั้ง 3 ไฟล์ขึ้น GitHub ให้เองโดยไม่ต้องดาวน์โหลด (ต้องเชื่อมต่อ GitHub ที่หัวข้อท้ายหน้าก่อน)</div><button class="btn sm" type="button" id="pubBtn">เผยแพร่ขึ้น GitHub เลย</button><p class="hint" id="pubMsg" role="status"></p></div>
       </div>
     </section>
 
@@ -237,6 +240,8 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
       <h2>จัดการกิจกรรม</h2>
       <p class="sub">เลื่อนลำดับ ล็อก/ปลดล็อก ตั้งเวลาเปิด-ปิด แก้ชื่อ วันที่ และธีมสี จากนั้นกดสร้างไฟล์ topics.json แล้วอัปโหลดทับไฟล์เดิม (รอ 1-2 นาทีจึงมีผล)</p>
       <div class="warn">การล็อกเป็นแค่การปิดหน้าทำข้อสอบสำหรับนักเรียนทั่วไป ไม่ใช่ระบบรักษาความปลอดภัยเต็มรูปแบบ ผู้ที่เก่งคอมยังเปิดไฟล์ข้อสอบตรงๆ ได้ และเวลาเปิด-ปิดอิงนาฬิกาในเครื่องของนักเรียนแต่ละคน</div>
+      <div class="mbtns"><button class="btn alt sm" type="button" id="mQrHome">QR หน้ารวมกิจกรรม</button></div>
+      <div id="mQrHomeBox"></div>
       <div id="mList"><p class="hint">กำลังโหลดรายการ…</p></div>
       <p class="err" id="mErr" role="alert"></p>
       <div class="row">
@@ -248,9 +253,37 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
         <ol class="steps"><li>กดดาวน์โหลด topics.json</li><li>อัปโหลดไปที่ลิงก์ด้านล่าง ทับไฟล์เดิม แล้วกด Commit changes</li><li>รอ 1-2 นาที แล้วรีเฟรชหน้าเว็บ</li></ol>
         <div id="mWarn"></div>
         <div id="mFile"></div>
+        <div class="file"><b>เผยแพร่ด้วยปุ่มเดียว</b><div class="dest">อัปโหลด topics.json ขึ้น GitHub ให้เอง (ต้องเชื่อมต่อ GitHub ก่อน)</div><button class="btn sm" type="button" id="mPub">เผยแพร่ขึ้น GitHub เลย</button><p class="hint" id="mPubMsg" role="status"></p></div>
       </div>
     </section>
   </div>
+
+    <section class="card">
+      <details id="ghDet">
+        <summary>เชื่อมต่อ GitHub (เพื่อเผยแพร่ด้วยปุ่มเดียว)</summary>
+        <p class="sub">ไม่บังคับ ถ้าไม่เชื่อมต่อ ยังใช้วิธีดาวน์โหลดแล้วอัปโหลดเองได้เหมือนเดิม</p>
+        <ol class="steps">
+          <li>เปิด github.com → รูปโปรไฟล์ → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</li>
+          <li>ตั้งชื่อ เลือกวันหมดอายุ (แนะนำ 90 วัน) ที่ Repository access เลือก Only select repositories แล้วเลือก repo ของเว็บนี้</li>
+          <li>ที่ Permissions → Repository permissions ตั้ง Contents เป็น Read and write แล้วกด Generate token</li>
+          <li>คัดลอก token (ขึ้นต้น github_pat_) มาวางด้านล่าง แล้วกดบันทึก</li>
+        </ol>
+        <label for="ghToken">Token</label>
+        <input type="password" id="ghToken" autocomplete="off" autocapitalize="none" spellcheck="false">
+        <div class="grid2">
+          <div><label for="ghOwner">ชื่อผู้ใช้ GitHub</label><input type="text" id="ghOwner" autocapitalize="none" spellcheck="false"></div>
+          <div><label for="ghRepo">ชื่อ repo</label><input type="text" id="ghRepo" autocapitalize="none" spellcheck="false"></div>
+        </div>
+        <label for="ghBranch">Branch</label>
+        <input type="text" id="ghBranch" value="main" style="max-width:160px" autocapitalize="none">
+        <div class="row" style="margin-top:12px">
+          <button class="btn sm" type="button" id="ghSave">บันทึกและทดสอบ</button>
+          <button class="btn alt sm" type="button" id="ghForget">ลบ token ออกจากเครื่องนี้</button>
+        </div>
+        <p class="hint" id="ghMsg" role="status"></p>
+        <p class="hint">token เก็บไว้ในเบราว์เซอร์ของเครื่องนี้เท่านั้น ไม่ถูกส่งไปที่ไหนนอกจาก GitHub และมีสิทธิ์เฉพาะ repo ที่เลือก ถ้าเครื่องหาย ให้ลบ token ที่หน้า GitHub ทันที</p>
+      </details>
+    </section>
 
     <section class="card">
       <details>
@@ -374,19 +407,20 @@ function clean(s){ return s.normalize("NFC").replace(/[​-‍﻿]/g, ""); }
 var S = { img: null, cx: 0.521, by: 0.466, width: 0.46 };
 var cv = $("cv"), ctx = cv.getContext("2d");
 
+function adoptImage(im){
+  S.img = im;
+  $("certInfo").textContent = "รูปขนาด " + im.naturalWidth + " × " + im.naturalHeight + " พิกเซล" +
+    (im.naturalWidth < 2000 ? " (ความละเอียดค่อนข้างต่ำ ถ้า Canva ดาวน์โหลดขนาด 2x ได้ จะคมกว่า)" : "");
+  var pw = Math.min(1100, im.naturalWidth);
+  cv.width = pw; cv.height = Math.round(pw * im.naturalHeight / im.naturalWidth);
+  $("designer").hidden = false;
+  fontReady().then(draw);
+}
 $("certFile").addEventListener("change", function(){
   var f = this.files && this.files[0];
   if (!f) return;
   var url = URL.createObjectURL(f), im = new Image();
-  im.onload = function(){
-    S.img = im; S.file = f;
-    $("certInfo").textContent = "รูปขนาด " + im.naturalWidth + " × " + im.naturalHeight + " พิกเซล" +
-      (im.naturalWidth < 2000 ? " (ความละเอียดค่อนข้างต่ำ ถ้า Canva ดาวน์โหลดขนาด 2x ได้ จะคมกว่า)" : "");
-    var pw = Math.min(1100, im.naturalWidth);
-    cv.width = pw; cv.height = Math.round(pw * im.naturalHeight / im.naturalWidth);
-    $("designer").hidden = false;
-    fontReady().then(draw);
-  };
+  im.onload = function(){ adoptImage(im); };
   im.onerror = function(){ $("certInfo").textContent = "เปิดรูปนี้ไม่ได้ ลองใช้ไฟล์ PNG หรือ JPG"; };
   im.src = url;
 });
@@ -534,7 +568,7 @@ function buildConfig(f){
   var obj = {
     id: f.id, pageTitle: "ตอบปัญหา" + f.shortName, title: f.title, dateText: f.dateText, theme: getTheme(), intro: f.intro,
     passPercent: f.pass, fileName: "เกียรติบัตร_" + f.shortName.replace(/\s+/g, "_"),
-    certificate: {
+    certificate: !S.img ? { image: "", centerX: 0.5, baselineY: 0.5, referenceName: REF_NAME, referenceWidth: 0.46, maxWidth: MAX_W, weight: 700, color: "#000000" } : {
       image: "certificate.png",
       centerX: +S.cx.toFixed(4), baselineY: +S.by.toFixed(4),
       referenceName: REF_NAME, referenceWidth: +S.width.toFixed(4), maxWidth: MAX_W,
@@ -553,13 +587,21 @@ function certBlob(){
     c.toBlob(function(b){ b ? res(b) : rej(new Error("แปลงรูปไม่สำเร็จ")); }, "image/png");
   });
 }
+var DEFAULT_LIST = { siteTitle: "ตอบปัญหาออนไลน์ ขยายความรู้วันสำคัญ", siteIntro: ["โดยคณะกรรมการสภานักเรียน โรงเรียนศีขรภูมิพิสัย ประจำปีการศึกษา 2569", "เลือกกิจกรรมที่ต้องการ ทำข้อสอบให้ผ่านเกณฑ์ แล้วรับเกียรติบัตรได้ทันที"], topics: [] };
 function loadTopicsList(){
-  return fetch("topics/topics.json?v=" + Date.now(), { cache: "no-store" })
-    .then(function(r){ if (!r.ok) throw new Error("x"); return r.json(); })
-    .then(function(j){ return { data: j, found: true }; })
-    .catch(function(){
-      return { found: false, data: { siteTitle: "ตอบปัญหาออนไลน์ ขยายความรู้วันสำคัญ", siteIntro: ["โดยคณะกรรมการสภานักเรียน โรงเรียนศีขรภูมิพิสัย ประจำปีการศึกษา 2569", "เลือกกิจกรรมที่ต้องการ ทำข้อสอบให้ผ่านเกณฑ์ แล้วรับเกียรติบัตรได้ทันที"], topics: [] } };
-    });
+  function web(){
+    return fetch("topics/topics.json?v=" + Date.now(), { cache: "no-store" })
+      .then(function(r){ if (!r.ok) throw new Error("x"); return r.json(); })
+      .then(function(j){ return { data: j, found: true }; })
+      .catch(function(){ return { found: false, data: JSON.parse(JSON.stringify(DEFAULT_LIST)) }; });
+  }
+  if (ghReady()){
+    return ghGet("topics/topics.json").then(function(j){
+      if (!j || !j.content) return web();
+      return { found: true, data: JSON.parse(b64ToText(j.content)) };
+    }).catch(web);
+  }
+  return web();
 }
 function fileRow(name, dest, destLabel, blob){
   var d = document.createElement("div"); d.className = "file";
@@ -582,7 +624,6 @@ $("genBtn").addEventListener("click", function(){
     dateText: clean($("dateText").value.trim()), pass: parseInt($("pass").value, 10),
     intro: $("intro").value.split("\n").map(function(s){ return clean(s).trim(); }).filter(Boolean)
   };
-  if (!S.img) return err.textContent = "ขั้นที่ 1: ยังไม่ได้เลือกรูปเกียรติบัตร";
   if (!EX.questions.length) return err.textContent = "ขั้นที่ 2: ยังไม่มีข้อสอบ";
   if (EX.errors.length) return err.textContent = "ขั้นที่ 2: ข้อสอบยังมีข้อผิดพลาด " + EX.errors.length + " จุด แก้ตามข้อความสีแดงก่อน";
   if (!f.shortName) return err.textContent = "ขั้นที่ 3: กรอกชื่อกิจกรรมสั้นๆ";
@@ -591,13 +632,15 @@ $("genBtn").addEventListener("click", function(){
   if (!f.dateText) return err.textContent = "ขั้นที่ 3: กรอกวันที่ของกิจกรรม";
   if (!(f.pass >= 1 && f.pass <= 100)) return err.textContent = "ขั้นที่ 3: เกณฑ์ผ่านต้องอยู่ระหว่าง 1-100";
   $("genBtn").disabled = true;
-  Promise.all([certBlob(), loadTopicsList()]).then(function(r){
+  Promise.all([S.img ? certBlob() : Promise.resolve(null), loadTopicsList()]).then(function(r){
     var png = r[0], list = r[1], data = list.data;
     var cur = data.topics || [], idx = -1;
     cur.forEach(function(t, i){ if (t.id === f.id) idx = i; });
     var existed = idx >= 0;
     var entry = existed ? Object.assign({}, cur[idx]) : { id: f.id };
     entry.title = f.title; entry.dateText = f.dateText; entry.theme = getTheme();
+    delete entry.draft;
+    if (!png){ entry.noCert = true; entry.locked = true; } else delete entry.noCert;
     if ($("lockNew").checked) entry.locked = true;
     if (existed) cur[idx] = entry; else cur.unshift(entry);
     data.topics = cur;
@@ -606,12 +649,15 @@ $("genBtn").addEventListener("click", function(){
     var info = repoInfo(), box = $("files"); box.innerHTML = "";
     var topicDest = info ? info.base + "/topics/" + f.id : null, listDest = info ? info.base + "/topics" : null;
     box.appendChild(fileRow("config.js", topicDest, "topics/" + f.id, cfgBlob));
-    box.appendChild(fileRow("certificate.png", topicDest, "topics/" + f.id, png));
+    if (png) box.appendChild(fileRow("certificate.png", topicDest, "topics/" + f.id, png));
     box.appendChild(fileRow("topics.json", listDest, "topics", jsonBlob));
+    G = { id: f.id, files: [{ path: "topics/" + f.id + "/config.js", blob: cfgBlob }].concat(png ? [{ path: "topics/" + f.id + "/certificate.png", blob: png }] : [], [{ path: "topics/topics.json", blob: jsonBlob }]) };
+    $("pubMsg").textContent = "";
     var wb = $("warnBox"); wb.innerHTML = "";
     function warn(t){ var d = document.createElement("div"); d.className = "warn"; d.textContent = t; wb.appendChild(d); }
     if (!list.found) warn("ไม่พบรายการกิจกรรมเดิมจากเว็บ (อาจเปิดหน้านี้จากในเครื่อง ไม่ได้เปิดผ่านลิงก์ github.io) ไฟล์ topics.json ที่ได้มีเฉพาะหัวข้อนี้ หากอัปโหลดจะทับรายการเดิม ให้เปิดหน้านี้ผ่านลิงก์เว็บจริงแล้วสร้างใหม่");
     if (existed) warn("มีหัวข้อชื่อ " + f.id + " อยู่แล้ว ไฟล์ใหม่จะทับของเดิม (ตำแหน่ง การล็อก และเวลาเปิด-ปิดเดิมคงไว้)");
+    if (!png) warn("ยังไม่ได้ใส่เกียรติบัตร หัวข้อนี้จะถูกล็อกไว้ก่อน (ผู้สอบยังเข้าไม่ได้) เมื่อใส่เกียรติบัตรแล้วค่อยปลดล็อกในแท็บจัดการ");
     if (!info) warn("เปิดหน้านี้ผ่านลิงก์ github.io เพื่อให้มีลิงก์อัปโหลดสำเร็จรูป");
     var url = new URL("index.html?t=" + encodeURIComponent(f.id), location.href).href;
     $("openLink").href = url; $("openUrl").textContent = "ลิงก์สำหรับแจกนักเรียน: " + url.replace(/index\.html/, "");
@@ -630,7 +676,18 @@ var PRESETS = {
   loykrathong: { name: "ลอยกระทง", icon: "🪔", forest: "#2b1b52", emerald: "#5b3fa6", leaf: "#eee8fa", gold: "#946000", bg: "#f6f3fb", heroSub: "#ffd98a" },
   songkran:    { name: "สงกรานต์ (น้ำ)", icon: "💦", forest: "#0b3d6b", emerald: "#0b72a8", leaf: "#e1f1fa", gold: "#0b7f81", bg: "#f1f7fb", heroSub: "#bfe6ff" },
   fathers:     { name: "วันพ่อ (เหลือง)", icon: "🌻", forest: "#5e4400", emerald: "#8a6100", leaf: "#fdf3d0", gold: "#7a5200", bg: "#fbf8ef", heroSub: "#ffe38a" },
-  mothers:     { name: "วันแม่ (ฟ้า)", icon: "💙", forest: "#1c4a78", emerald: "#2a67a8", leaf: "#e6f0fa", gold: "#8a6a1c", bg: "#f3f7fb", heroSub: "#cfe4ff" }
+  mothers:     { name: "วันแม่ (ฟ้า)", icon: "💙", forest: "#1c4a78", emerald: "#2a67a8", leaf: "#e6f0fa", gold: "#8a6a1c", bg: "#f3f7fb", heroSub: "#cfe4ff" },
+  newyear:     { name: "ปีใหม่", icon: "🎆", forest: "#1a1a4d", emerald: "#3a3fa8", leaf: "#e8e9fa", gold: "#8a6a12", bg: "#f4f4fb", heroSub: "#ffe08a" },
+  chinese:     { name: "ตรุษจีน (แดง)", icon: "🧧", forest: "#7a0c0c", emerald: "#c0281c", leaf: "#fdeaea", gold: "#8a6000", bg: "#fbf4f2", heroSub: "#ffd36b" },
+  makha:       { name: "มาฆบูชา (ทอง)", icon: "🪷", forest: "#5a3d00", emerald: "#a06a00", leaf: "#fdf3dc", gold: "#7a5200", bg: "#fbf8f0", heroSub: "#fff0b3" },
+  teacher:     { name: "วันครู", icon: "📚", forest: "#0f3d5e", emerald: "#1d6a8f", leaf: "#e3f1f8", gold: "#8a6a12", bg: "#f2f7fa", heroSub: "#ffe08a" },
+  cancer:      { name: "มะเร็ง (ชมพูม่วง)", icon: "🎗️", forest: "#5b1a4a", emerald: "#b03a8f", leaf: "#fbe6f4", gold: "#8a3a6e", bg: "#fcf4f9", heroSub: "#ffc8ec" },
+  women:       { name: "สตรีสากล (ม่วง)", icon: "💜", forest: "#3b1a5e", emerald: "#7b3fb0", leaf: "#f1e8fa", gold: "#7a3f8a", bg: "#f8f4fb", heroSub: "#e6c8ff" },
+  water:       { name: "น้ำ (ฟ้าน้ำทะเล)", icon: "💧", forest: "#0a3a5c", emerald: "#0e7490", leaf: "#e0f4f8", gold: "#0b6b78", bg: "#f0f8fa", heroSub: "#bdeeff" },
+  art:         { name: "ศิลปะ/กวี (น้ำตาลอุ่น)", icon: "🎨", forest: "#3a2a14", emerald: "#8a4b1f", leaf: "#f8ece0", gold: "#8a5a12", bg: "#faf6f1", heroSub: "#ffd9a0" },
+  soil:        { name: "ดิน (น้ำตาล)", icon: "🌱", forest: "#3f2a12", emerald: "#7b5a2e", leaf: "#f3e9dc", gold: "#8a5a12", bg: "#f9f5ef", heroSub: "#e8c99a" },
+  elephant:    { name: "ช้าง (เทา)", icon: "🐘", forest: "#2f3a40", emerald: "#55707a", leaf: "#e8eef0", gold: "#8a6a12", bg: "#f3f6f7", heroSub: "#dfe9ec" },
+  constitution:{ name: "รัฐธรรมนูญ (น้ำเงิน)", icon: "🏛️", forest: "#12305e", emerald: "#1f4f9a", leaf: "#e5edf9", gold: "#8a6a12", bg: "#f3f6fb", heroSub: "#ffe08a" }
 };
 var CIDS = { forest: "cForest", emerald: "cEmerald", gold: "cGold", leaf: "cLeaf", bg: "cBg", heroSub: "cSub" };
 function themeOf(preset){ var o = {}, p = PRESETS[preset]; ["forest","emerald","leaf","gold","bg","heroSub","icon"].forEach(function(k){ o[k] = p[k]; }); return o; }
@@ -726,9 +783,13 @@ function renderManage(){
     }
     btn("▲ ขึ้น", function(){ list.splice(i - 1, 0, list.splice(i, 1)[0]); renderManage(); }, i === 0);
     btn("ลง ▼", function(){ list.splice(i + 1, 0, list.splice(i, 1)[0]); renderManage(); }, i === list.length - 1);
-    btn(t.locked ? "ปลดล็อก" : "ล็อก", function(){ t.locked = !t.locked; renderManage(); }, false, !!t.locked ? false : true);
+    btn(t.locked ? "ปลดล็อก" : "ล็อก", function(){ t.locked = !t.locked; renderManage(); }, !!((t.noCert && t.locked) || t.draft), !!t.locked ? false : true);
+    if (t.draft) btns.appendChild(mk("span", { cls: "hint", text: "ยังไม่มีข้อสอบ กด \"แก้ไข\" เพื่อเพิ่มข้อสอบ" }));
+    else if (t.noCert && t.locked) btns.appendChild(mk("span", { cls: "hint", text: "ยังไม่มีเกียรติบัตร (เพิ่มในปุ่มแก้ไขก่อนปลดล็อก)" }));
     var a = mk("a", { cls: "btn alt sm", href: new URL("index.html?t=" + encodeURIComponent(t.id) + "&preview=1", location.href).href, target: "_blank", rel: "noopener", text: "ทดสอบ" });
-    btns.appendChild(a);
+    if (!t.draft) btns.appendChild(a);
+    btn(t.draft ? "เพิ่มข้อสอบ/เกียรติบัตร" : "แก้ไขข้อสอบ/เกียรติบัตร", function(){ editTopic(t.id, t); });
+    btn("QR", function(){ M.qrOpen = (M.qrOpen === t.id ? null : t.id); renderManage(); });
     btn("นำออกจากรายการ", function(){
       if (confirm("นำ \"" + t.title + "\" ออกจากรายการหน้ารวม? (ไฟล์ข้อสอบในโฟลเดอร์ topics/" + t.id + " ยังอยู่ ไม่ถูกลบ)")){ list.splice(i, 1); renderManage(); }
     });
@@ -752,6 +813,7 @@ function renderManage(){
     grid.appendChild(field("ปิดรับเมื่อ (เวลาไทย) เว้นว่าง = ไม่ปิด", ci));
     grid.appendChild(field("ธีมสี", ts));
     row.appendChild(grid);
+    if (M.qrOpen === t.id) row.appendChild(qrBlock(siteBase() + "?t=" + encodeURIComponent(t.id), t.title, "QR_" + t.id));
     box.appendChild(row);
   });
 }
@@ -773,10 +835,252 @@ $("mGen").addEventListener("click", function(){
   var blob = new Blob([JSON.stringify(out, null, 2) + "\n"], { type: "application/json" });
   var info = repoInfo(), box = $("mFile"); box.innerHTML = "";
   box.appendChild(fileRow("topics.json", info ? info.base + "/topics" : null, "topics", blob));
+  MG = [{ path: "topics/topics.json", blob: blob }]; $("mPubMsg").textContent = "";
   $("mWarn").innerHTML = "";
   if (!info) $("mWarn").appendChild(mk("div", { cls: "warn", text: "เปิดหน้านี้ผ่านลิงก์ github.io เพื่อให้มีลิงก์อัปโหลดสำเร็จรูป" }));
   $("mOut").hidden = false; $("mOut").scrollIntoView({ behavior: "smooth", block: "start" });
 });
+
+/* ---------- เชื่อมต่อ GitHub ---------- */
+var GH = { token: "", owner: "", repo: "", branch: "main" }, G = null, MG = null;
+function ghLoad(){
+  try { var s = JSON.parse(localStorage.getItem("quizGh") || "null"); if (s) Object.keys(GH).forEach(function(k){ if (s[k]) GH[k] = s[k]; }); } catch(e){}
+  var ri = repoInfo(); if (ri){ if (!GH.owner) GH.owner = ri.owner; if (!GH.repo) GH.repo = ri.repo; }
+  $("ghToken").value = GH.token; $("ghOwner").value = GH.owner; $("ghRepo").value = GH.repo; $("ghBranch").value = GH.branch || "main";
+}
+function ghStore(){ try { localStorage.setItem("quizGh", JSON.stringify(GH)); } catch(e){} }
+function ghReady(){ return !!(GH.token && GH.owner && GH.repo); }
+function ghHeaders(){ return { Authorization: "Bearer " + GH.token, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" }; }
+function ghUrl(path){ return "https://api.github.com/repos/" + GH.owner + "/" + GH.repo + "/contents/" + path.split("/").map(encodeURIComponent).join("/"); }
+function ghErr(status, j){
+  if (status === 401) return "token ไม่ถูกต้องหรือหมดอายุ";
+  if (status === 403) return "token ไม่มีสิทธิ์เขียนไฟล์ (ตรวจว่าตั้ง Contents เป็น Read and write และเลือก repo นี้)";
+  if (status === 404) return "ไม่พบ repo หรือ token ไม่มีสิทธิ์เข้าถึง (ตรวจชื่อผู้ใช้ ชื่อ repo และ branch)";
+  if (status === 409 || status === 422) return "ไฟล์ขัดแย้งกับเวอร์ชันบน GitHub ลองใหม่อีกครั้ง";
+  return (j && j.message) || ("เกิดข้อผิดพลาด (" + status + ")");
+}
+function ghGet(path){
+  return fetch(ghUrl(path) + "?ref=" + encodeURIComponent(GH.branch) + "&t=" + Date.now(), { headers: ghHeaders(), cache: "no-store" })
+    .then(function(r){ if (r.status === 404) return null; if (!r.ok) return r.json().catch(function(){ return {}; }).then(function(j){ throw new Error(ghErr(r.status, j)); }); return r.json(); });
+}
+function b64ToText(b64){
+  var bin = atob(b64.replace(/\s/g, "")), arr = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new TextDecoder("utf-8").decode(arr);
+}
+function blobToB64(blob){
+  return new Promise(function(res, rej){
+    var fr = new FileReader();
+    fr.onload = function(){ res(String(fr.result).split(",")[1] || ""); };
+    fr.onerror = function(){ rej(new Error("อ่านไฟล์ไม่สำเร็จ")); };
+    fr.readAsDataURL(blob);
+  });
+}
+function ghPut(path, blob, message){
+  return Promise.all([ghGet(path), blobToB64(blob)]).then(function(r){
+    var body = { message: message, content: r[1], branch: GH.branch };
+    if (r[0] && r[0].sha) body.sha = r[0].sha;
+    return fetch(ghUrl(path), { method: "PUT", headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders()), body: JSON.stringify(body) })
+      .then(function(res){ if (!res.ok) return res.json().catch(function(){ return {}; }).then(function(j){ throw new Error(ghErr(res.status, j)); }); return res.json(); });
+  });
+}
+function publish(files, msgEl, btn, label){
+  if (!ghReady()){ msgEl.textContent = "ยังไม่ได้เชื่อมต่อ GitHub ให้เปิดหัวข้อ \"เชื่อมต่อ GitHub\" ท้ายหน้าแล้วใส่ token ก่อน หรือใช้วิธีดาวน์โหลดแล้วอัปโหลดเอง"; msgEl.className = "err"; $("ghDet").open = true; return; }
+  btn.disabled = true; msgEl.className = "hint";
+  var chain = Promise.resolve();
+  files.forEach(function(f, i){
+    chain = chain.then(function(){
+      msgEl.textContent = "กำลังอัปโหลด " + f.path.split("/").pop() + " (" + (i + 1) + "/" + files.length + ")…";
+      return ghPut(f.path, f.blob, label + ": " + f.path);
+    });
+  });
+  chain.then(function(){ msgEl.className = "ok"; msgEl.textContent = "เผยแพร่เรียบร้อย GitHub ใช้เวลา 1-2 นาทีในการอัปเดตเว็บ แล้วรีเฟรชหน้าเว็บ"; })
+    .catch(function(e){ msgEl.className = "err"; msgEl.textContent = "เผยแพร่ไม่สำเร็จ: " + e.message + " (ไฟล์ที่อัปโหลดไปแล้วก่อนหน้ายังอยู่ ลองกดอีกครั้งได้)"; })
+    .then(function(){ btn.disabled = false; });
+}
+$("ghSave").addEventListener("click", function(){
+  GH.token = $("ghToken").value.trim(); GH.owner = $("ghOwner").value.trim(); GH.repo = $("ghRepo").value.trim(); GH.branch = $("ghBranch").value.trim() || "main";
+  var m = $("ghMsg"); m.className = "hint";
+  if (!ghReady()){ m.className = "err"; m.textContent = "กรอก token ชื่อผู้ใช้ และชื่อ repo ให้ครบ"; return; }
+  m.textContent = "กำลังทดสอบการเชื่อมต่อ…";
+  fetch("https://api.github.com/repos/" + GH.owner + "/" + GH.repo, { headers: ghHeaders(), cache: "no-store" })
+    .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if (!r.ok) throw new Error(ghErr(r.status, j)); return j; }); })
+    .then(function(j){
+      if (j.permissions && j.permissions.push === false) throw new Error("token อ่านได้อย่างเดียว ต้องตั้ง Contents เป็น Read and write");
+      ghStore(); m.className = "ok"; m.textContent = "เชื่อมต่อสำเร็จ (" + j.full_name + ") บันทึก token ไว้ในเครื่องนี้แล้ว";
+    }).catch(function(e){ m.className = "err"; m.textContent = "เชื่อมต่อไม่สำเร็จ: " + e.message; });
+});
+$("ghForget").addEventListener("click", function(){
+  GH.token = ""; $("ghToken").value = ""; try { localStorage.removeItem("quizGh"); } catch(e){}
+  $("ghMsg").className = "hint"; $("ghMsg").textContent = "ลบ token ออกจากเครื่องนี้แล้ว";
+});
+$("pubBtn").addEventListener("click", function(){ if (!G) return; publish(G.files, $("pubMsg"), $("pubBtn"), "เพิ่ม/แก้ไขหัวข้อ " + G.id); });
+$("mPub").addEventListener("click", function(){ if (!MG) return; publish(MG, $("mPubMsg"), $("mPub"), "แก้ไขรายการกิจกรรม"); });
+ghLoad();
+
+/* ---------- QR code (เขียนเอง ไม่พึ่งเว็บภายนอก) ---------- */
+function qrMatrix(text){
+  var data = Array.prototype.slice.call(new TextEncoder().encode(text));
+  var V = [null, { ec: 10, g: [[1, 16]] }, { ec: 16, g: [[1, 28]] }, { ec: 26, g: [[1, 44]] }, { ec: 18, g: [[2, 32]] }, { ec: 24, g: [[2, 43]] },
+    { ec: 16, g: [[4, 27]] }, { ec: 18, g: [[4, 31]] }, { ec: 22, g: [[2, 38], [2, 39]] }, { ec: 22, g: [[3, 36], [2, 37]] }, { ec: 26, g: [[4, 43], [1, 44]] }];
+  var ALIGN = [null, [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34], [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50]];
+  var ver = 0, dcw = 0, v, d;
+  for (v = 1; v <= 10; v++){
+    d = 0; V[v].g.forEach(function(g){ d += g[0] * g[1]; });
+    if (data.length <= Math.floor((d * 8 - 4 - (v < 10 ? 8 : 16)) / 8)){ ver = v; dcw = d; break; }
+  }
+  if (!ver) throw new Error("ลิงก์ยาวเกินไปสำหรับ QR");
+  var bits = [];
+  function put(val, len){ for (var i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); }
+  put(4, 4); put(data.length, ver < 10 ? 8 : 16); data.forEach(function(b){ put(b, 8); });
+  var total = dcw * 8; put(0, Math.min(4, total - bits.length)); while (bits.length % 8) bits.push(0);
+  var pads = [0xEC, 0x11], pi = 0; while (bits.length < total) put(pads[pi++ % 2], 8);
+  var cws = []; for (var i = 0; i < bits.length; i += 8){ var x = 0; for (var j = 0; j < 8; j++) x = (x << 1) | bits[i + j]; cws.push(x); }
+  var exp = new Array(512), log = new Array(256), val = 1;
+  for (i = 0; i < 255; i++){ exp[i] = val; log[val] = i; val <<= 1; if (val & 256) val ^= 0x11d; }
+  for (i = 255; i < 512; i++) exp[i] = exp[i - 255];
+  function gmul(a, b){ return (a && b) ? exp[log[a] + log[b]] : 0; }
+  function rsGen(n){ var g = [1]; for (var i = 0; i < n; i++){ var ng = new Array(g.length + 1).fill(0); for (var j = 0; j < g.length; j++){ ng[j] ^= g[j]; ng[j + 1] ^= gmul(g[j], exp[i]); } g = ng; } return g; }
+  function rsEnc(dd, n){ var g = rsGen(n), r = new Array(n).fill(0); dd.forEach(function(b){ var f = b ^ r[0]; r.shift(); r.push(0); if (f) for (var i = 0; i < n; i++) r[i] ^= gmul(g[i + 1], f); }); return r; }
+  var blocks = [], pos = 0;
+  V[ver].g.forEach(function(g){ for (var k = 0; k < g[0]; k++){ var dd = cws.slice(pos, pos + g[1]); pos += g[1]; blocks.push({ d: dd, e: rsEnc(dd, V[ver].ec) }); } });
+  var out = [], maxd = 0; blocks.forEach(function(b){ maxd = Math.max(maxd, b.d.length); });
+  for (i = 0; i < maxd; i++) blocks.forEach(function(b){ if (i < b.d.length) out.push(b.d[i]); });
+  for (i = 0; i < V[ver].ec; i++) blocks.forEach(function(b){ out.push(b.e[i]); });
+  var size = 17 + 4 * ver, M = [], F = [], y, xx;
+  for (y = 0; y < size; y++){ M.push(new Array(size).fill(false)); F.push(new Array(size).fill(false)); }
+  function setF(x, y, dark){ M[y][x] = dark; F[y][x] = true; }
+  function finder(cx, cy){ for (var dy = -4; dy <= 4; dy++) for (var dx = -4; dx <= 4; dx++){ var x = cx + dx, y = cy + dy; if (x < 0 || y < 0 || x >= size || y >= size) continue; var dist = Math.max(Math.abs(dx), Math.abs(dy)); setF(x, y, dist !== 2 && dist !== 4); } }
+  for (i = 0; i < size; i++){ setF(6, i, i % 2 === 0); setF(i, 6, i % 2 === 0); }
+  finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+  var ap = ALIGN[ver];
+  ap.forEach(function(ay, ai){ ap.forEach(function(ax, aj){
+    if ((ai === 0 && aj === 0) || (ai === 0 && aj === ap.length - 1) || (ai === ap.length - 1 && aj === 0)) return;
+    for (var dy = -2; dy <= 2; dy++) for (var dx = -2; dx <= 2; dx++) setF(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+  }); });
+  function drawFormat(mask){
+    var dd = (0 << 3) | mask, rem = dd; for (var k = 0; k < 10; k++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+    var fb = ((dd << 10) | rem) ^ 0x5412;
+    function gb(n){ return ((fb >>> n) & 1) !== 0; }
+    for (var k2 = 0; k2 <= 5; k2++) setF(8, k2, gb(k2));
+    setF(8, 7, gb(6)); setF(8, 8, gb(7)); setF(7, 8, gb(8));
+    for (k2 = 9; k2 < 15; k2++) setF(14 - k2, 8, gb(k2));
+    for (k2 = 0; k2 < 8; k2++) setF(size - 1 - k2, 8, gb(k2));
+    for (k2 = 8; k2 < 15; k2++) setF(8, size - 15 + k2, gb(k2));
+    setF(8, size - 8, true);
+  }
+  drawFormat(0);
+  if (ver >= 7){
+    var rem = ver; for (i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+    var vb = (ver << 12) | rem;
+    for (i = 0; i < 18; i++){ var dk = ((vb >>> i) & 1) !== 0, a = size - 11 + i % 3, b = Math.floor(i / 3); setF(a, b, dk); setF(b, a, dk); }
+  }
+  var k = 0;
+  for (var right = size - 1; right >= 1; right -= 2){
+    if (right === 6) right = 5;
+    for (var vert = 0; vert < size; vert++) for (j = 0; j < 2; j++){
+      xx = right - j; var upward = ((right + 1) & 2) === 0; y = upward ? size - 1 - vert : vert;
+      if (!F[y][xx] && k < out.length * 8){ M[y][xx] = ((out[k >>> 3] >>> (7 - (k & 7))) & 1) !== 0; k++; }
+    }
+  }
+  var MASKS = [function(x, y){ return (x + y) % 2 === 0; }, function(x, y){ return y % 2 === 0; }, function(x, y){ return x % 3 === 0; }, function(x, y){ return (x + y) % 3 === 0; },
+    function(x, y){ return (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0; }, function(x, y){ return x * y % 2 + x * y % 3 === 0; },
+    function(x, y){ return (x * y % 2 + x * y % 3) % 2 === 0; }, function(x, y){ return ((x + y) % 2 + x * y % 3) % 2 === 0; }];
+  function applyMask(m){ for (var y = 0; y < size; y++) for (var x = 0; x < size; x++) if (!F[y][x] && MASKS[m](x, y)) M[y][x] = !M[y][x]; }
+  function penalty(){
+    var p = 0, x, y, run, c, dark = 0;
+    for (var pass = 0; pass < 2; pass++){
+      for (y = 0; y < size; y++){ run = 1; for (x = 1; x < size; x++){ var a = pass ? M[x][y] : M[y][x], b = pass ? M[x - 1][y] : M[y][x - 1]; if (a === b){ run++; if (run === 5) p += 3; else if (run > 5) p++; } else run = 1; } }
+    }
+    for (y = 0; y < size - 1; y++) for (x = 0; x < size - 1; x++){ c = M[y][x]; if (c === M[y][x + 1] && c === M[y + 1][x] && c === M[y + 1][x + 1]) p += 3; }
+    for (y = 0; y < size; y++) for (x = 0; x < size; x++) if (M[y][x]) dark++;
+    p += Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+    return p;
+  }
+  var best = 0, bestP = Infinity, m;
+  for (m = 0; m < 8; m++){ applyMask(m); var pp = penalty(); if (pp < bestP){ bestP = pp; best = m; } applyMask(m); }
+  applyMask(best); drawFormat(best);
+  return M;
+}
+window.__qrMatrix = qrMatrix;
+function drawQr(canvas, url, caption){
+  var M = qrMatrix(url), n = M.length, s = 10, q = 4, side = (n + q * 2) * s;
+  var lines = caption ? [caption] : [], cap = lines.length ? 90 : 0;
+  canvas.width = side; canvas.height = side + cap;
+  var c = canvas.getContext("2d");
+  c.fillStyle = "#fff"; c.fillRect(0, 0, canvas.width, canvas.height);
+  c.fillStyle = "#000";
+  for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) if (M[y][x]) c.fillRect((x + q) * s, (y + q) * s, s, s);
+  if (cap){
+    var size = 34; c.font = "700 " + size + "px " + FAMILY;
+    while (c.measureText(caption).width > side - 40 && size > 16){ size -= 2; c.font = "700 " + size + "px " + FAMILY; }
+    c.textAlign = "center"; c.textBaseline = "middle"; c.fillStyle = "#000";
+    c.fillText(caption, side / 2, side + cap / 2 - 6);
+  }
+}
+function siteBase(){ return new URL("./", location.href).href; }
+function qrBlock(url, caption, fname){
+  var box = mk("div", { cls: "qrbox" }), cvs = mk("canvas"), msg = mk("p", { cls: "hint", text: url });
+  box.appendChild(cvs); box.appendChild(msg);
+  try { drawQr(cvs, url, caption); } catch(e){ msg.className = "err"; msg.textContent = e.message; return box; }
+  var b = mk("button", { type: "button", cls: "btn gold sm", text: "ดาวน์โหลด QR (PNG)" });
+  b.addEventListener("click", function(){ cvs.toBlob(function(bl){ if (bl) save(bl, fname + ".png"); }, "image/png"); });
+  box.appendChild(b);
+  fontReady().then(function(){ try { drawQr(cvs, url, caption); } catch(e){} });
+  return box;
+}
+$("mQrHome").addEventListener("click", function(){
+  var box = $("mQrHomeBox");
+  if (box.firstChild){ box.innerHTML = ""; return; }
+  box.appendChild(qrBlock(siteBase(), "ตอบปัญหาออนไลน์ วันสำคัญ", "QR_หน้ารวมกิจกรรม"));
+});
+
+/* ---------- แก้ไขหัวข้อเดิม ---------- */
+function examToText(qs){
+  return qs.map(function(q, i){
+    return ["ข้อ " + (i + 1) + ". " + q.q].concat(q.choices.map(function(c, k){ return LET[k] + ". " + c; }), ["เฉลย: " + LET[q.answer] + ". " + q.choices[q.answer]]).join("\n");
+  }).join("\n");
+}
+function editTopic(id, entry){
+  var st = $("mErr"); st.textContent = "กำลังโหลดหัวข้อ " + id + "…";
+  function fill(T, im){
+    var c = T.certificate || {};
+    if (im){
+      adoptImage(im);
+      S.cx = c.centerX != null ? c.centerX : S.cx; S.by = c.baselineY != null ? c.baselineY : S.by; S.width = c.referenceWidth || S.width;
+      $("wRange").value = String(S.width * 100); $("weight").value = String(c.weight || 700); $("color").value = c.color || "#000000";
+    }
+    $("topicId").value = id; $("topicId").readOnly = true;
+    $("shortName").value = (T.pageTitle || "").replace(/^ตอบปัญหา/, "") || (entry && entry.title) || id;
+    $("title").value = (entry && entry.title) || T.title || ""; titleTouched = true;
+    $("dateText").value = (entry && entry.dateText) || T.dateText || "";
+    $("intro").value = (T.intro || []).join("\n"); $("pass").value = T.passPercent || 80;
+    setTheme((entry && entry.theme) || T.theme || themeOf("forest"));
+    $("exam").value = T.questions && T.questions.length ? examToText(T.questions) : ""; renderExam();
+    $("lockNew").checked = false;
+    $("editId").textContent = id; $("editBanner").hidden = false; $("outBox").hidden = true;
+    document.querySelector('[data-tab=build]').click();
+    st.textContent = "";
+  }
+  if (entry && entry.draft){
+    fill({ title: entry.title, dateText: entry.dateText, pageTitle: "ตอบปัญหา" + entry.title, intro: ["ตอบปัญหาออนไลน์ \"" + entry.title + "\"", "โดยคณะกรรมการสภานักเรียน โรงเรียนศีขรภูมิพิสัย ประจำปีการศึกษา 2569"], passPercent: 80, questions: [] }, null);
+    return;
+  }
+  fetch("topics/" + encodeURIComponent(id) + "/config.js?v=" + Date.now(), { cache: "no-store" })
+    .then(function(r){ if (!r.ok) throw new Error("ไม่พบไฟล์ข้อสอบของหัวข้อนี้"); return r.text(); })
+    .then(function(txt){
+      var w = {}; new Function("window", txt)(w); var T = w.QUIZ_TOPIC;
+      if (!T || !T.questions) throw new Error("อ่านไฟล์ข้อสอบไม่ได้");
+      var img = T.certificate && T.certificate.image;
+      if (!img || (entry && entry.noCert)) return [T, null];
+      return fetch("topics/" + encodeURIComponent(id) + "/" + img, { cache: "no-store" })
+        .then(function(r){ if (!r.ok) throw new Error("ไม่พบรูปเกียรติบัตรของหัวข้อนี้"); return r.blob(); })
+        .then(function(bl){ return new Promise(function(res, rej){ var im = new Image(); im.onload = function(){ res([T, im]); }; im.onerror = function(){ rej(new Error("เปิดรูปเกียรติบัตรไม่ได้")); }; im.src = URL.createObjectURL(bl); }); });
+    })
+    .then(function(r){ fill(r[0], r[1]); })
+    .catch(function(e){ st.textContent = "โหลดหัวข้อไม่สำเร็จ: " + e.message; });
+}
+$("editCancel").addEventListener("click", function(){ location.reload(); });
 
 /* ---------- เปลี่ยนรหัสผ่าน ---------- */
 var newAdminJs = null;

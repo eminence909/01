@@ -110,6 +110,20 @@ a.topic:hover{background:var(--leaf)}
 .fatal{margin:40px 16px;padding:20px;background:#fff;border:1px solid var(--line);border-radius:12px}
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.topic{display:flex;align-items:center;gap:14px;transition:transform .15s,box-shadow .15s}
+a.topic:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.topic .ti{flex:none;display:flex;align-items:center;justify-content:center;width:52px;height:52px;margin:0;border-radius:14px;background:var(--leaf);font-size:1.7rem;line-height:1}
+.topic.off .ti{filter:grayscale(1);opacity:.55;background:#e2e6e3}
+.topic .tx{min-width:0}
+.fx{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.fx i{position:absolute;top:-12%;font-style:normal;opacity:.4;will-change:transform;animation:fxfall linear infinite}
+@keyframes fxfall{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(22px,60vh) rotate(180deg)}100%{transform:translate(-12px,125vh) rotate(360deg)}}
+.herofx{position:absolute;inset:0;pointer-events:none}
+.herofx i{position:absolute;font-style:normal;opacity:.22;animation:fxbob 5s ease-in-out infinite}
+@keyframes fxbob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-12px) rotate(6deg)}}
+.hero>*:not(.herofx):not(.ribbon){position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){.fx i,.herofx i{animation:none}.fx i{top:auto}.topic{transition:none}}
 </style>
 </head>
 <body>
@@ -268,6 +282,32 @@ function mix(a, b, k){
   });
   return out;
 }
+var FX = { "🎃":["🎃","🦇","👻","🕸️"], "💝":["💝","❤️","💕","🌹"], "🎄":["❄️","🎄","⭐","🎁"], "🎆":["🎆","✨","🎉"], "🧧":["🧧","🏮","🪙"], "🪷":["🪷","🕯️","✨"], "📚":["📚","✏️","🍎"], "🎗️":["🎗️","💗"], "💜":["💜","🌸","✨"], "💧":["💧","🌊","🫧"], "🎨":["🎨","📜","✒️"], "🌱":["🌱","🍃","🌾"], "🐘":["🐘","🍃","🌿"], "🏛️":["🏛️","⚖️","📜"], "🌿":["🍃","🌿","🌳"], "🌻":["🌻","💛","🌼"], "💙":["💙","🌸","🌷"], "🪔":["🪔","🌸","✨"], "💦":["💦","💧","🌸"] };
+function decor(icon){
+  var old = document.querySelectorAll(".fx,.herofx"); for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+  if (!icon) return;
+  var set = FX[icon] || [icon], n = Math.min(14, Math.max(8, Math.round(window.innerWidth / 70)));
+  var fx = document.createElement("div"); fx.className = "fx"; fx.setAttribute("aria-hidden", "true");
+  for (var k = 0; k < n; k++){
+    var e = document.createElement("i"); e.textContent = set[k % set.length];
+    e.style.left = Math.round((k + Math.random() * 0.8) * 100 / n) + "%";
+    e.style.fontSize = (18 + Math.round(Math.random() * 16)) + "px";
+    e.style.animationDuration = (11 + Math.round(Math.random() * 10)) + "s";
+    e.style.animationDelay = "-" + Math.round(Math.random() * 20) + "s";
+    fx.appendChild(e);
+  }
+  document.body.appendChild(fx);
+  var hero = document.querySelector(".hero");
+  if (hero){
+    var hf = document.createElement("div"); hf.className = "herofx"; hf.setAttribute("aria-hidden", "true");
+    [[64, 14, 54], [80, 52, 40], [90, 8, 34], [52, 58, 30], [74, 30, 70]].forEach(function(p, j){
+      var e = document.createElement("i"); e.textContent = set[j % set.length];
+      e.style.left = p[0] + "%"; e.style.top = p[1] + "%"; e.style.fontSize = p[2] + "px"; e.style.animationDelay = (-j * 0.9) + "s";
+      hf.appendChild(e);
+    });
+    hero.insertBefore(hf, hero.firstChild);
+  }
+}
 function applyTheme(th){
   if (!th) return;
   var st = document.documentElement.style;
@@ -278,13 +318,14 @@ function applyTheme(th){
     st.setProperty("--rib3", th.gold); st.setProperty("--rib4", mix(th.gold, "#ffffff", 0.45));
   }
   $("heroIcon").textContent = th.icon || "";
+  decor(th.icon || "");
 }
 function getList(){
   return fetch("topics/topics.json?v=" + Date.now(), { cache: "no-store" })
     .then(function(r){ if (!r.ok) throw new Error("no list"); return r.json(); });
 }
 function topicStatus(t){
-  if (t.locked) return "locked";
+  if (t.locked || t.draft) return "locked";
   var now = Date.now(), o = Date.parse(t.opensAt || ""), c = Date.parse(t.closesAt || "");
   if (!isNaN(o) && now < o) return "notyet";
   if (!isNaN(c) && now >= c) return "closed";
@@ -296,7 +337,7 @@ function fmtTime(iso){
   } catch(e){ return ""; }
 }
 function statusText(t, st){
-  return st === "locked" ? "ยังไม่เปิดรับ" : st === "notyet" ? "เปิดรับ " + fmtTime(t.opensAt) : st === "closed" ? "ปิดรับแล้ว" : "";
+  return st === "locked" ? (t.draft ? "เร็วๆ นี้" : "ยังไม่เปิดรับ") : st === "notyet" ? "เปิดรับ " + fmtTime(t.opensAt) : st === "closed" ? "ปิดรับแล้ว" : "";
 }
 
 /* หน้ารวมกิจกรรม: แสดงเมื่อเปิดลิงก์โดยไม่มี ?t= */
@@ -317,14 +358,15 @@ function showHome(data){
       el.href = "?t=" + encodeURIComponent(t.id);
       if (t.theme && HEX.test(t.theme.emerald || "")) el.style.setProperty("--tc", t.theme.emerald);
     } else el.setAttribute("aria-disabled", "true");
-    var b = document.createElement("b");
-    b.textContent = ((t.theme && t.theme.icon) ? t.theme.icon + " " : "") + t.title;
-    el.appendChild(b);
-    if (t.dateText){ var d = document.createElement("span"); d.textContent = t.dateText; el.appendChild(d); }
-    if (!open){ var g = document.createElement("span"); g.className = "badge"; g.textContent = statusText(t, st); el.appendChild(g); }
+    var ic = document.createElement("span"); ic.className = "ti"; ic.textContent = (t.theme && t.theme.icon) || "📝"; ic.setAttribute("aria-hidden", "true"); el.appendChild(ic);
+    var tx = document.createElement("div"); tx.className = "tx"; el.appendChild(tx);
+    var b = document.createElement("b"); b.textContent = t.title; tx.appendChild(b);
+    if (t.dateText){ var d = document.createElement("span"); d.textContent = t.dateText; tx.appendChild(d); }
+    if (!open){ var g = document.createElement("span"); g.className = "badge"; g.textContent = statusText(t, st); tx.appendChild(g); }
     box.appendChild(el);
   });
   $("s-start").hidden = true; $("s-home").hidden = false; $("app").hidden = false;
+  decor("🌿");
 }
 function showClosed(e, st){
   document.title = e.title;
