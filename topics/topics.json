@@ -7,7 +7,7 @@
   "topics": [
     {
       "id": "environment-day",
-      "title": "วันสิ่งแวดล้อมไทย",
+      "title": "ตอบปัญหาออนไลน์ \"วันสิ่งแวดล้อมไทย\"",
       "dateText": "4 ธันวาคม พ.ศ. 2569",
       "theme": {
         "forest": "#123d27",
@@ -17,8 +17,7 @@
         "bg": "#f3f6f3",
         "heroSub": "#f0d98a",
         "icon": "🌿"
-      },
-      "opensAt": "2026-10-29T00:00:00+07:00"
+      }
     },
     {
       "id": "soil-day",
@@ -27,13 +26,14 @@
       "theme": {
         "forest": "#3f2a12",
         "emerald": "#7b5a2e",
-        "gold": "#8a5a12",
         "leaf": "#f3e9dc",
+        "gold": "#8a5a12",
         "bg": "#f9f5ef",
         "heroSub": "#e8c99a",
         "icon": "🌱"
       },
-      "opensAt": "2026-10-29T19:46:00+07:00"
+      "locked": true,
+      "draft": true
     },
     {
       "id": "fathers-day",
@@ -42,14 +42,14 @@
       "theme": {
         "forest": "#5e4400",
         "emerald": "#8a6100",
-        "gold": "#7a5200",
         "leaf": "#fdf3d0",
+        "gold": "#7a5200",
         "bg": "#fbf8ef",
         "heroSub": "#ffe38a",
         "icon": "🌻"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "constitution-day",
@@ -58,14 +58,14 @@
       "theme": {
         "forest": "#12305e",
         "emerald": "#1f4f9a",
-        "gold": "#8a6a12",
         "leaf": "#e5edf9",
+        "gold": "#8a6a12",
         "bg": "#f3f6fb",
         "heroSub": "#ffe08a",
         "icon": "🏛️"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "christmas-day",
@@ -74,14 +74,14 @@
       "theme": {
         "forest": "#14452f",
         "emerald": "#b3202a",
-        "gold": "#8a6a12",
         "leaf": "#fdecea",
+        "gold": "#8a6a12",
         "bg": "#f7f5ef",
         "heroSub": "#f0d98a",
         "icon": "🎄"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "wildlife-protection-day",
@@ -90,14 +90,14 @@
       "theme": {
         "forest": "#123d27",
         "emerald": "#1f6b45",
-        "gold": "#966a12",
         "leaf": "#e6f0e8",
+        "gold": "#966a12",
         "bg": "#f3f6f3",
         "heroSub": "#f0d98a",
         "icon": "🌿"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "new-year-day",
@@ -106,14 +106,14 @@
       "theme": {
         "forest": "#1a1a4d",
         "emerald": "#3a3fa8",
-        "gold": "#8a6a12",
         "leaf": "#e8e9fa",
+        "gold": "#8a6a12",
         "bg": "#f4f4fb",
         "heroSub": "#ffe08a",
         "icon": "🎆"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "forest-conservation-day",
@@ -122,14 +122,14 @@
       "theme": {
         "forest": "#123d27",
         "emerald": "#1f6b45",
-        "gold": "#966a12",
         "leaf": "#e6f0e8",
+        "gold": "#966a12",
         "bg": "#f3f6f3",
         "heroSub": "#f0d98a",
         "icon": "🌿"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "teachers-day",
@@ -138,14 +138,14 @@
       "theme": {
         "forest": "#0f3d5e",
         "emerald": "#1d6a8f",
-        "gold": "#8a6a12",
         "leaf": "#e3f1f8",
+        "gold": "#8a6a12",
         "bg": "#f2f7fa",
         "heroSub": "#ffe08a",
         "icon": "📚"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "inventors-day",
@@ -154,14 +154,14 @@
       "theme": {
         "forest": "#0f3d5e",
         "emerald": "#1d6a8f",
-        "gold": "#8a6a12",
         "leaf": "#e3f1f8",
+        "gold": "#8a6a12",
         "bg": "#f2f7fa",
         "heroSub": "#ffe08a",
         "icon": "📚"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "world-cancer-day",
@@ -170,46 +170,46 @@
       "theme": {
         "forest": "#5b1a4a",
         "emerald": "#b03a8f",
-        "gold": "#8a3a6e",
         "leaf": "#fbe6f4",
+        "gold": "#8a3a6e",
         "bg": "#fcf4f9",
         "heroSub": "#ffc8ec",
         "icon": "🎗️"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "chinese-new-year",
       "title": "วันตรุษจีน",
-      "dateText": "6 กุมภาพันธ์ พ.ศ. 2570",
+      "dateText": "กุมภาพันธ์ พ.ศ. 2570",
       "theme": {
         "forest": "#7a0c0c",
         "emerald": "#c0281c",
-        "gold": "#8a6000",
         "leaf": "#fdeaea",
+        "gold": "#8a6000",
         "bg": "#fbf4f2",
         "heroSub": "#ffd36b",
         "icon": "🧧"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "makha-bucha-day",
       "title": "วันมาฆบูชา",
-      "dateText": "21 กุมภาพันธ์ พ.ศ. 2570",
+      "dateText": "กุมภาพันธ์ พ.ศ. 2570",
       "theme": {
         "forest": "#5a3d00",
         "emerald": "#a06a00",
-        "gold": "#7a5200",
         "leaf": "#fdf3dc",
+        "gold": "#7a5200",
         "bg": "#fbf8f0",
         "heroSub": "#fff0b3",
         "icon": "🪷"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "national-artist-day",
@@ -218,14 +218,14 @@
       "theme": {
         "forest": "#3a2a14",
         "emerald": "#8a4b1f",
-        "gold": "#8a5a12",
         "leaf": "#f8ece0",
+        "gold": "#8a5a12",
         "bg": "#faf6f1",
         "heroSub": "#ffd9a0",
         "icon": "🎨"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "world-wildlife-day",
@@ -234,14 +234,14 @@
       "theme": {
         "forest": "#123d27",
         "emerald": "#1f6b45",
-        "gold": "#966a12",
         "leaf": "#e6f0e8",
+        "gold": "#966a12",
         "bg": "#f3f6f3",
         "heroSub": "#f0d98a",
         "icon": "🌿"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "womens-day",
@@ -250,14 +250,14 @@
       "theme": {
         "forest": "#3b1a5e",
         "emerald": "#7b3fb0",
-        "gold": "#7a3f8a",
         "leaf": "#f1e8fa",
+        "gold": "#7a3f8a",
         "bg": "#f8f4fb",
         "heroSub": "#e6c8ff",
         "icon": "💜"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "thai-elephant-day",
@@ -266,14 +266,14 @@
       "theme": {
         "forest": "#2f3a40",
         "emerald": "#55707a",
-        "gold": "#8a6a12",
         "leaf": "#e8eef0",
+        "gold": "#8a6a12",
         "bg": "#f3f6f7",
         "heroSub": "#dfe9ec",
         "icon": "🐘"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "health-volunteer-day",
@@ -282,14 +282,14 @@
       "theme": {
         "forest": "#0a3a5c",
         "emerald": "#0e7490",
-        "gold": "#0b6b78",
         "leaf": "#e0f4f8",
+        "gold": "#0b6b78",
         "bg": "#f0f8fa",
         "heroSub": "#bdeeff",
         "icon": "💧"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "world-forest-day",
@@ -298,14 +298,14 @@
       "theme": {
         "forest": "#123d27",
         "emerald": "#1f6b45",
-        "gold": "#966a12",
         "leaf": "#e6f0e8",
+        "gold": "#966a12",
         "bg": "#f3f6f3",
         "heroSub": "#f0d98a",
         "icon": "🌿"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "world-poetry-day",
@@ -314,14 +314,14 @@
       "theme": {
         "forest": "#3a2a14",
         "emerald": "#8a4b1f",
-        "gold": "#8a5a12",
         "leaf": "#f8ece0",
+        "gold": "#8a5a12",
         "bg": "#faf6f1",
         "heroSub": "#ffd9a0",
         "icon": "🎨"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     },
     {
       "id": "world-water-day",
@@ -330,14 +330,14 @@
       "theme": {
         "forest": "#0a3a5c",
         "emerald": "#0e7490",
-        "gold": "#0b6b78",
         "leaf": "#e0f4f8",
+        "gold": "#0b6b78",
         "bg": "#f0f8fa",
         "heroSub": "#bdeeff",
         "icon": "💧"
       },
       "locked": true,
-      "noCert": true
+      "draft": true
     }
   ]
 }
