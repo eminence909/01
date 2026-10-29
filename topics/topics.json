@@ -171,14 +171,14 @@
       "theme": {
         "forest": "#5b1a4a",
         "emerald": "#b03a8f",
-        "leaf": "#fbe6f4",
         "gold": "#8a3a6e",
+        "leaf": "#fbe6f4",
         "bg": "#fcf4f9",
         "heroSub": "#ffc8ec",
         "icon": "🎗️"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "chinese-new-year",
