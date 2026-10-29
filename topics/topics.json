@@ -199,18 +199,18 @@
     {
       "id": "makha-bucha-day",
       "title": "วันมาฆบูชา",
-      "dateText": "กุมภาพันธ์ พ.ศ. 2570",
+      "dateText": "21 กุมภาพันธ์ พ.ศ. 2570",
       "theme": {
         "forest": "#5a3d00",
         "emerald": "#a06a00",
-        "leaf": "#fdf3dc",
         "gold": "#7a5200",
+        "leaf": "#fdf3dc",
         "bg": "#fbf8f0",
         "heroSub": "#fff0b3",
         "icon": "🪷"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "national-artist-day",
