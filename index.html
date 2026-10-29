@@ -171,16 +171,18 @@ a.topic:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.12)}
     <div id="nameSlotStart">
       <div id="nameFields">
         <div class="field">
+          <label for="cat">คุณคือ</label>
+          <select id="cat">
+            <option value="__none" disabled selected>เลือกประเภทผู้ทำ</option>
+            <option value="student">นักเรียน</option>
+            <option value="teacher">ครู / บุคลากร</option>
+            <option value="public">บุคคลทั่วไป</option>
+          </select>
+        </div>
+        <div class="field">
           <label for="prefix">คำนำหน้า</label>
-          <select id="prefix">
-            <option value="__none" disabled selected>เลือกคำนำหน้า</option>
-            <option>เด็กชาย</option>
-            <option>เด็กหญิง</option>
-            <option>นาย</option>
-            <option>นางสาว</option>
-            <option>นาง</option>
-            <option value="__blank">ไม่ใส่คำนำหน้า</option>
-            <option value="__custom">อื่นๆ (พิมพ์เอง)</option>
+          <select id="prefix" disabled>
+            <option value="__none" disabled selected>เลือกประเภทก่อน</option>
           </select>
         </div>
         <div class="field" id="customWrap" hidden>
@@ -198,6 +200,7 @@ a.topic:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.12)}
           </div>
         </div>
         <p class="hint">ชื่อที่กรอกจะพิมพ์ลงบนเกียรติบัตร กรุณาพิมพ์ให้ถูกต้อง</p>
+        <p class="hint" id="logNote" hidden>เมื่อทำผ่านเกณฑ์ ระบบจะบันทึกชื่อ ประเภทผู้ทำ หัวข้อ คะแนน และเวลา เพื่อสรุปผลกิจกรรมของสภานักเรียน</p>
         <p class="err" id="nameErr" role="alert"></p>
       </div>
     </div>
@@ -375,9 +378,11 @@ function showClosed(e, st){
   $("closedMsg").textContent = st === "closed" ? "กิจกรรมนี้สิ้นสุดการรับแล้ว" : st === "notyet" ? "กลับมาทำข้อสอบได้เมื่อถึงเวลาที่กำหนด" : "กิจกรรมนี้ยังไม่เปิดให้ทำข้อสอบ โปรดรอประกาศจากคณะกรรมการสภานักเรียน";
   $("s-start").hidden = true; $("s-closed").hidden = false; $("app").hidden = false;
 }
+var LOGURL = "";
 var ENTRY = null, PREVIEW = params.get("preview") === "1";
 if (topicId){
   getList().then(function(d){
+    if (/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(d.logUrl || "")) LOGURL = d.logUrl;
     var e = (d.topics || []).filter(function(t){ return t.id === topicId; })[0];
     ENTRY = e || null;
     if (e) applyTheme(e.theme);
@@ -398,6 +403,7 @@ function init(T){
   $("intro").innerHTML = "";
   (T.intro || []).forEach(function(t){ var p = document.createElement("p"); p.textContent = t; $("intro").appendChild(p); });
 
+  $("logNote").hidden = !LOGURL || PREVIEW;
   var total = T.questions.length;
   var need = Math.ceil(total * T.passPercent / 100 - 1e-9);
   var facts = [
@@ -425,6 +431,7 @@ function init(T){
   }
   function readName(){
     var p = $("prefix").value, prefix = "";
+    if ($("cat").value === "__none") return { error: "กรุณาเลือกประเภทผู้ทำ" };
     if (p === "__none") return { error: "กรุณาเลือกคำนำหน้า" };
     if (p === "__custom") { prefix = clean($("customPrefix").value); if (!prefix) return { error: "กรุณาพิมพ์คำนำหน้า" }; }
     else if (p !== "__blank") prefix = p;
@@ -435,11 +442,32 @@ function init(T){
     for (var i = 0; i < all.length; i++){
       if (all[i] && !NAME_OK.test(all[i])) return { error: "ชื่อใช้ได้เฉพาะตัวอักษรไทยหรืออังกฤษ ห้ามมีตัวเลขหรือสัญลักษณ์" };
     }
-    return { full: prefix + first + " " + last, first: first, last: last };
+    return { full: prefix + first + " " + last, prefix: prefix, first: first, last: last, cat: $("cat").value };
   }
+  var PREFIXES = {
+    student: ["เด็กชาย", "เด็กหญิง", "นาย", "นางสาว"],
+    teacher: ["นาย", "นาง", "นางสาว", "ดร.", "ผศ.", "รศ.", "ศ."],
+    "public": ["นาย", "นาง", "นางสาว", "เด็กชาย", "เด็กหญิง", "ดร."]
+  };
+  var CAT_TH = { student: "นักเรียน", teacher: "ครู/บุคลากร", "public": "บุคคลทั่วไป" };
+  function fillPrefix(){
+    var cat = $("cat").value, sel = $("prefix"), list = PREFIXES[cat] || [];
+    sel.innerHTML = "";
+    function o(v, t, dis){ var e = document.createElement("option"); e.value = v; e.textContent = t; if (dis) e.disabled = true; sel.appendChild(e); }
+    o("__none", list.length ? "เลือกคำนำหน้า" : "เลือกประเภทก่อน", true);
+    list.forEach(function(t){ o(t, t); });
+    if (list.length){ o("__blank", "ไม่ใส่คำนำหน้า"); o("__custom", "อื่นๆ (พิมพ์เอง)"); }
+    sel.value = "__none"; sel.disabled = !list.length; $("customWrap").hidden = true;
+  }
+  $("cat").addEventListener("change", fillPrefix);
   $("prefix").addEventListener("change", function(){
     $("customWrap").hidden = ($("prefix").value !== "__custom");
   });
+  function logPass(n, c){
+    if (!LOGURL || PREVIEW || !n || n.error) return;
+    var body = JSON.stringify({ topic: topicId, title: (ENTRY && ENTRY.title) || T.title, category: CAT_TH[n.cat] || n.cat, prefix: n.prefix, first: n.first, last: n.last, score: c, total: total, percent: Math.round(c / total * 100) });
+    try { fetch(LOGURL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: body, keepalive: true }).catch(function(){}); } catch(e){}
+  }
 
   /* ---------- สลับข้อ ---------- */
   function shuffle(a){
@@ -524,6 +552,7 @@ function init(T){
       $("resTitle").textContent = "ผ่านเกณฑ์แล้ว ขอแสดงความยินดี";
       $("resNote").textContent = "ตรวจสอบชื่อบนเกียรติบัตร แล้วกดดาวน์โหลดได้เลย";
       $("confirm").checked = false;
+      logPass(readName(), c);
       $("editBox").hidden = true; $("editBtn").textContent = "แก้ไขชื่อ";
       $("nameSlotResult").appendChild($("nameFields"));
       buildCert();
@@ -614,7 +643,7 @@ function init(T){
     if (n.error) return;
     editTimer = setTimeout(buildCert, 450);
   }
-  ["prefix","customPrefix","first","last"].forEach(function(id){
+  ["cat","prefix","customPrefix","first","last"].forEach(function(id){
     $(id).addEventListener("input", function(){ if (!$("s-result").hidden) onNameEdit(); });
     $(id).addEventListener("change", function(){ if (!$("s-result").hidden) onNameEdit(); });
   });

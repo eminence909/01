@@ -267,6 +267,32 @@ details summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;alig
       </div>
     </section>
     <section class="card">
+      <h2>บันทึกรายชื่อผู้ทำผ่านลง Google Sheet</h2>
+      <p class="sub">เมื่อมีคนทำผ่านเกณฑ์ ระบบจะส่ง ประเภท คำนำหน้า ชื่อ นามสกุล หัวข้อ คะแนน และเวลา ไปเก็บใน Google Sheet ของคุณ ตั้งค่าครั้งเดียว</p>
+      <details><summary>วิธีตั้งค่า (ทำครั้งเดียว)</summary>
+        <ol class="steps"><li>เปิด sheets.google.com สร้างตารางใหม่ ตั้งชื่อเช่น "รายชื่อผู้ผ่าน"</li><li>เมนู ส่วนขยาย (Extensions) เลือก Apps Script</li><li>ลบโค้ดเดิม วางโค้ดด้านล่าง กดบันทึก</li><li>กด ติดตั้ง (Deploy) เลือก การติดตั้งใหม่ (New deployment) ชนิด เว็บแอป (Web app) ตั้ง Execute as: Me และ Who has access: Anyone แล้วกด Deploy (ครั้งแรกให้กดอนุญาตสิทธิ์)</li><li>คัดลอก Web app URL (ลงท้ายด้วย /exec) มาวางในช่องด้านล่าง</li><li>กดส่งทดสอบ ดูว่ามีแถวใหม่ใน Sheet แล้วกดสร้างไฟล์ topics.json และเผยแพร่</li></ol>
+        <pre id="lgCode" style="white-space:pre-wrap;background:#f3f6f3;padding:10px;border-radius:8px;font-size:.85rem">function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var d = JSON.parse(e.postData.contents);
+    var s = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    if (s.getLastRow() === 0) s.appendRow(["เวลา","รหัสหัวข้อ","กิจกรรม","ประเภท","คำนำหน้า","ชื่อ","นามสกุล","คะแนน","เต็ม","เปอร์เซ็นต์"]);
+    var c = function(v){ return String(v == null ? "" : v).slice(0, 120).replace(/^[=+@-]/, "'$&"); };
+    s.appendRow([new Date(), c(d.topic), c(d.title), c(d.category), c(d.prefix), c(d.first), c(d.last), Number(d.score)||0, Number(d.total)||0, Number(d.percent)||0]);
+  } catch (err) {} finally { lock.releaseLock(); }
+  return ContentService.createTextOutput("ok");
+}
+function doGet() { return ContentService.createTextOutput("ok"); }</pre>
+        <button class="btn alt sm" type="button" id="lgCopy">คัดลอกโค้ด</button>
+      </details>
+      <label class="lbl" for="logUrl">Web app URL (เว้นว่าง = ไม่บันทึก)</label>
+      <input type="text" id="logUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off">
+      <div class="row"><button class="btn alt sm" type="button" id="lgTest">ส่งทดสอบ</button></div>
+      <p class="hint" id="lgMsg" role="status"></p>
+      <p class="hint">ข้อมูลเป็นชื่อบุคคล แนะนำให้แชร์ Sheet เฉพาะผู้ที่จำเป็น และเว็บมีข้อความแจ้งผู้ทำว่ามีการบันทึกแล้ว ระบบบันทึกชื่อ ณ ตอนที่ผ่านเกณฑ์ (ถ้าแก้ชื่อบนเกียรติบัตรภายหลังจะไม่ถูกอัปเดตใน Sheet)</p>
+    </section>
+    <section class="card">
       <h2>ย้อนกลับเวอร์ชัน (เมื่อแก้พลาด)</h2>
       <p class="sub">เลือกไฟล์ที่เคยเผยแพร่ แล้วดูประวัติการแก้ไขจาก GitHub กู้คืนเวอร์ชันเก่าได้ทันที (ต้องเชื่อมต่อ GitHub) การกู้คืนจะเป็นการบันทึกครั้งใหม่ ประวัติเดิมไม่หาย</p>
       <label class="lbl" for="rbFile">ไฟล์</label><select id="rbFile"></select>
@@ -803,7 +829,7 @@ function mk(tag, props, kids){
 }
 function field(label, input){ var d = mk("div", {}, [mk("label", { text: label }), input]); return d; }
 function renderManage(){
-  try { fillRollbackOptions(); } catch(_){}
+  try { fillRollbackOptions(); syncLogUrl(); } catch(_){}
   var box = $("mList"); box.innerHTML = "";
   var list = M.data.topics;
   if (!list.length){ box.appendChild(mk("p", { cls: "hint", text: "ยังไม่มีกิจกรรมในรายการ" })); return; }
@@ -1280,6 +1306,27 @@ $("bkFile").addEventListener("change", function(){
     publish(files, m, $("bkDl"), "กู้คืนจากไฟล์สำรอง");
   };
   fr.readAsText(f);
+});
+
+/* ---------- บันทึกรายชื่อลง Google Sheet ---------- */
+var LOG_RE = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
+function syncLogUrl(){ if (M.data && document.activeElement !== $("logUrl")) $("logUrl").value = M.data.logUrl || ""; }
+$("logUrl").addEventListener("input", function(){
+  if (!M.data) return; var v = this.value.trim(), m = $("lgMsg");
+  if (!v){ delete M.data.logUrl; m.className = "hint"; m.textContent = "ไม่บันทึกรายชื่อ"; return; }
+  if (!LOG_RE.test(v)){ m.className = "err"; m.textContent = "URL ต้องขึ้นต้น https://script.google.com/macros/s/ และลงท้าย /exec"; return; }
+  M.data.logUrl = v; m.className = "ok"; m.textContent = "ตั้งค่าแล้ว อย่าลืมกดสร้างไฟล์ topics.json แล้วเผยแพร่";
+});
+$("lgTest").addEventListener("click", function(){
+  var v = $("logUrl").value.trim(), m = $("lgMsg");
+  if (!LOG_RE.test(v)){ m.className = "err"; m.textContent = "ใส่ URL ให้ถูกต้องก่อน"; return; }
+  fetch(v, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ topic: "test", title: "ทดสอบจากหน้าแอดมิน", category: "ทดสอบ", prefix: "", first: "ทดสอบ", last: "ระบบ", score: 10, total: 10, percent: 100 }) })
+    .then(function(){ m.className = "ok"; m.textContent = "ส่งแล้ว ตรวจใน Google Sheet ว่ามีแถวใหม่ (ถ้าไม่มี ตรวจว่าตั้ง Who has access เป็น Anyone และใช้ URL ล่าสุด)"; })
+    .catch(function(){ m.className = "err"; m.textContent = "ส่งไม่สำเร็จ ตรวจอินเทอร์เน็ตและ URL"; });
+});
+$("lgCopy").addEventListener("click", function(){
+  var t = $("lgCode").textContent;
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ $("lgMsg").className = "ok"; $("lgMsg").textContent = "คัดลอกโค้ดแล้ว"; }, function(){});
 });
 
 /* ---------- เปลี่ยนรหัสผ่าน ---------- */
