@@ -38,19 +38,19 @@
     },
     {
       "id": "fathers-day",
-      "title": "วันพ่อแห่งชาติ",
+      "title": "ตอบปัญหาออนไลน์ \"วันพ่อแห่งชาติ\"",
       "dateText": "5 ธันวาคม พ.ศ. 2569",
       "theme": {
         "forest": "#5e4400",
         "emerald": "#8a6100",
-        "leaf": "#fdf3d0",
         "gold": "#7a5200",
+        "leaf": "#fdf3d0",
         "bg": "#fbf8ef",
         "heroSub": "#ffe38a",
         "icon": "🌻"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "constitution-day",
