@@ -405,8 +405,10 @@ function init(T){
       x.font = cc.weight + " " + size + "px " + FAMILY;
       var w = x.measureText(name).width, maxW = cc.maxWidth * W;
       if (w > maxW){ size *= maxW / w; x.font = cc.weight + " " + size + "px " + FAMILY; }
-      x.textAlign = "center"; x.textBaseline = "alphabetic"; x.fillStyle = cc.color;
-      x.fillText(name, cc.centerX * W, cc.baselineY * H);
+      /* คำนวณจุดเริ่มเอง ไม่พึ่ง textAlign=center (iPad Safari วาดเลื่อนไปทางขวา) */
+      x.textAlign = "left"; x.textBaseline = "alphabetic"; x.fillStyle = cc.color;
+      var finalW = x.measureText(name).width;
+      x.fillText(name, cc.centerX * W - finalW / 2, cc.baselineY * H);
       return c;
     });
   }
