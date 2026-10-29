@@ -13,7 +13,8 @@
   --emerald:#1f6b45;
   --leaf:#e6f0e8;
   --gold:#b8862b;
-  --gold-soft:#f0d98a;
+  --hero-sub:#f0d98a;
+  --rib1:#9c6f1f;--rib2:#f6e3a0;--rib3:#c8962f;--rib4:#f0d98a;
   --ink:#1b2620;
   --muted:#5a6a60;
   --line:#cfdcd2;
@@ -32,7 +33,7 @@ main{max-width:720px;margin:0 auto;padding:0 0 48px}
 /* hero */
 .hero{position:relative;background:var(--forest);color:#fff;padding:40px 24px 76px;overflow:hidden}
 .hero h1{margin:0;font-size:clamp(1.7rem,6vw,2.5rem);line-height:1.35;font-weight:700}
-.hero .date{margin:6px 0 0;font-size:clamp(1.2rem,4vw,1.5rem);font-weight:600;color:var(--gold-soft)}
+.hero .date{margin:6px 0 0;font-size:clamp(1.2rem,4vw,1.5rem);font-weight:600;color:var(--hero-sub)}
 .hero .intro{margin:20px 0 0;font-size:1rem;color:#d4e4d9;max-width:34em}
 .hero .intro p{margin:0}
 .ribbon{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:56px;display:block}
@@ -54,7 +55,7 @@ input[type=text]:focus,select:focus{border-color:var(--emerald);outline:3px soli
 .err{color:var(--danger);font-size:.95rem;font-weight:600;margin:8px 0 0;min-height:1.4em}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:10px 24px;font:inherit;font-weight:700;border-radius:12px;border:2px solid var(--emerald);background:var(--emerald);color:#fff;cursor:pointer;text-decoration:none}
-.btn:hover{background:#185a39}
+.btn:hover{filter:brightness(.92)}
 .btn.alt{background:#fff;color:var(--emerald)}
 .btn.alt:hover{background:var(--leaf)}
 .btn.gold{background:var(--gold);border-color:var(--gold);color:#fff}
@@ -96,10 +97,15 @@ input[type=text]:focus,select:focus{border-color:var(--emerald);outline:3px soli
 .notice{background:#fff7e0;border:1px solid #ecd48a;border-radius:10px;padding:12px 14px;margin:0 0 16px;font-size:.98rem}
 .tip{font-size:.92rem;color:var(--muted);margin:14px 0 0}
 .topics{display:grid;gap:12px;margin-top:12px}
-a.topic{display:block;padding:16px 18px;border:1.5px solid #9db3a4;border-radius:12px;color:var(--ink);text-decoration:none;background:#fff}
-a.topic:hover{background:var(--leaf);border-color:var(--emerald)}
-a.topic b{display:block;font-size:1.1rem;line-height:1.45}
-a.topic span{display:block;color:var(--muted);font-size:.95rem;margin-top:2px}
+.topic{display:block;padding:16px 18px;border:1.5px solid #9db3a4;border-left:6px solid var(--tc,#9db3a4);border-radius:12px;color:var(--ink);text-decoration:none;background:#fff}
+a.topic:hover{background:var(--leaf)}
+.topic b{display:block;font-size:1.1rem;line-height:1.45}
+.topic span{display:block;color:var(--muted);font-size:.95rem;margin-top:2px}
+.topic.off{background:#eef1ee;color:#6b7770;border-style:dashed;border-left-style:solid;border-left-color:#b9c2bc}
+.topic.off b{color:#6b7770}
+.topic .badge{display:inline-block;margin-top:8px;padding:2px 12px;border-radius:99px;background:#d9dfda;font-size:.88rem;font-weight:600;color:#44524a}
+.heroicon{font-size:2.2rem;line-height:1;margin:0 0 8px}
+.heroicon:empty{display:none}
 .ver{text-align:center;color:var(--muted);font-size:.8rem;margin:20px 0 0}
 .fatal{margin:40px 16px;padding:20px;background:#fff;border:1px solid var(--line);border-radius:12px}
 
@@ -110,18 +116,19 @@ a.topic span{display:block;color:var(--muted);font-size:.95rem;margin-top:2px}
 <main id="app" hidden>
 
   <header class="hero">
+    <div class="heroicon" id="heroIcon" aria-hidden="true"></div>
     <h1 id="title"></h1>
     <p class="date" id="dateText"></p>
     <div class="intro" id="intro"></div>
     <svg class="ribbon" viewBox="0 0 800 56" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient id="g" x1="0" x2="1">
-          <stop offset="0" stop-color="#9c6f1f"/><stop offset=".35" stop-color="#f6e3a0"/>
-          <stop offset=".6" stop-color="#c8962f"/><stop offset="1" stop-color="#f0d98a"/>
+          <stop offset="0" style="stop-color:var(--rib1)"/><stop offset=".35" style="stop-color:var(--rib2)"/>
+          <stop offset=".6" style="stop-color:var(--rib3)"/><stop offset="1" style="stop-color:var(--rib4)"/>
         </linearGradient>
       </defs>
       <path d="M0 30 C140 0 300 56 470 26 S700 4 800 24 L800 34 C700 14 560 40 470 40 S150 18 0 44Z" fill="url(#g)"/>
-      <path d="M0 44 C150 18 330 62 470 40 S700 14 800 34 L800 56 L0 56Z" fill="#f3f6f3"/>
+      <path d="M0 44 C150 18 330 62 470 40 S700 14 800 34 L800 56 L0 56Z" style="fill:var(--bg)"/>
     </svg>
   </header>
 
@@ -131,8 +138,16 @@ a.topic span{display:block;color:var(--muted);font-size:.95rem;margin-top:2px}
     <div class="topics" id="topicList"></div>
   </section>
 
+  <!-- 0.5 ปิดรับ/ล็อก -->
+  <section id="s-closed" class="card" hidden>
+    <h2 id="closedTitle"></h2>
+    <p id="closedMsg"></p>
+    <a class="btn block" href="./">ดูกิจกรรมอื่น</a>
+  </section>
+
   <!-- 1 หน้าแรก -->
   <section id="s-start" class="card">
+    <div class="notice" id="prevNote" hidden>โหมดทดสอบของแอดมิน กิจกรรมนี้ยังล็อกอยู่ นักเรียนยังเข้าทำไม่ได้</div>
     <div class="notice" id="inapp" hidden>
       ตอนนี้เปิดเว็บในแอปอื่น (เช่น LINE หรือ Facebook) การดาวน์โหลดอาจใช้ไม่ได้
       แนะนำให้กดเมนูแล้วเลือก “เปิดใน Safari” หรือ “เปิดใน Chrome”
@@ -219,6 +234,7 @@ a.topic span{display:block;color:var(--muted);font-size:.95rem;margin-top:2px}
       <div class="actions" style="margin-top:20px"><button class="btn alt" id="homeBtn" type="button">กลับหน้าแรก</button></div>
     </div>
   </section>
+  <p class="ver">เวอร์ชัน 4</p>
 </main>
 
 <div class="fatal" id="fatal" hidden></div>
@@ -243,6 +259,47 @@ function loadTopic(){
   document.head.appendChild(s);
 }
 
+/* ---------- ธีมสี / สถานะกิจกรรม ---------- */
+var HEX = /^#[0-9a-fA-F]{6}$/;
+function mix(a, b, k){
+  var pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16), out = "#";
+  [16, 8, 0].forEach(function(s){
+    var ca = (pa >> s) & 255, cb = (pb >> s) & 255;
+    out += ("0" + Math.round(ca + (cb - ca) * k).toString(16)).slice(-2);
+  });
+  return out;
+}
+function applyTheme(th){
+  if (!th) return;
+  var st = document.documentElement.style;
+  var map = { forest: "--forest", emerald: "--emerald", leaf: "--leaf", gold: "--gold", bg: "--bg", heroSub: "--hero-sub" };
+  Object.keys(map).forEach(function(k){ if (HEX.test(th[k] || "")) st.setProperty(map[k], th[k]); });
+  if (HEX.test(th.gold || "")){
+    st.setProperty("--rib1", mix(th.gold, "#000000", 0.25)); st.setProperty("--rib2", mix(th.gold, "#ffffff", 0.6));
+    st.setProperty("--rib3", th.gold); st.setProperty("--rib4", mix(th.gold, "#ffffff", 0.45));
+  }
+  $("heroIcon").textContent = th.icon || "";
+}
+function getList(){
+  return fetch("topics/topics.json?v=" + Date.now(), { cache: "no-store" })
+    .then(function(r){ if (!r.ok) throw new Error("no list"); return r.json(); });
+}
+function topicStatus(t){
+  if (t.locked) return "locked";
+  var now = Date.now(), o = Date.parse(t.opensAt || ""), c = Date.parse(t.closesAt || "");
+  if (!isNaN(o) && now < o) return "notyet";
+  if (!isNaN(c) && now >= c) return "closed";
+  return "open";
+}
+function fmtTime(iso){
+  try {
+    return new Date(iso).toLocaleString("th-TH", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Bangkok" }) + " น.";
+  } catch(e){ return ""; }
+}
+function statusText(t, st){
+  return st === "locked" ? "ยังไม่เปิดรับ" : st === "notyet" ? "เปิดรับ " + fmtTime(t.opensAt) : st === "closed" ? "ปิดรับแล้ว" : "";
+}
+
 /* หน้ารวมกิจกรรม: แสดงเมื่อเปิดลิงก์โดยไม่มี ?t= */
 function showHome(data){
   var list = (data && data.topics) || [];
@@ -253,28 +310,50 @@ function showHome(data){
   $("intro").innerHTML = "";
   (data.siteIntro || []).forEach(function(t){ var p = document.createElement("p"); p.textContent = t; $("intro").appendChild(p); });
   var box = $("topicList"); box.innerHTML = "";
-  list.slice().reverse().forEach(function(t){
-    var a = document.createElement("a");
-    a.className = "topic"; a.href = "?t=" + encodeURIComponent(t.id);
-    var b = document.createElement("b"); b.textContent = t.title;
-    a.appendChild(b);
-    if (t.dateText){ var d = document.createElement("span"); d.textContent = t.dateText; a.appendChild(d); }
-    box.appendChild(a);
+  list.forEach(function(t){
+    var st = topicStatus(t), open = st === "open";
+    var el = document.createElement(open ? "a" : "div");
+    el.className = "topic" + (open ? "" : " off");
+    if (open){
+      el.href = "?t=" + encodeURIComponent(t.id);
+      if (t.theme && HEX.test(t.theme.emerald || "")) el.style.setProperty("--tc", t.theme.emerald);
+    } else el.setAttribute("aria-disabled", "true");
+    var b = document.createElement("b");
+    b.textContent = ((t.theme && t.theme.icon) ? t.theme.icon + " " : "") + t.title;
+    el.appendChild(b);
+    if (t.dateText){ var d = document.createElement("span"); d.textContent = t.dateText; el.appendChild(d); }
+    if (!open){ var g = document.createElement("span"); g.className = "badge"; g.textContent = statusText(t, st); el.appendChild(g); }
+    box.appendChild(el);
   });
   $("s-start").hidden = true; $("s-home").hidden = false; $("app").hidden = false;
 }
-if (topicId) loadTopic();
-else {
-  fetch("topics/topics.json?v=" + Date.now(), { cache: "no-store" })
-    .then(function(r){ if (!r.ok) throw new Error("no list"); return r.json(); })
-    .then(showHome)
-    .catch(function(){ topicId = "environment-day"; loadTopic(); });
+function showClosed(e, st){
+  document.title = e.title;
+  $("title").textContent = e.title; $("dateText").textContent = e.dateText || ""; $("intro").innerHTML = "";
+  $("closedTitle").textContent = statusText(e, st);
+  $("closedMsg").textContent = st === "closed" ? "กิจกรรมนี้สิ้นสุดการรับแล้ว" : st === "notyet" ? "กลับมาทำข้อสอบได้เมื่อถึงเวลาที่กำหนด" : "กิจกรรมนี้ยังไม่เปิดให้ทำข้อสอบ โปรดรอประกาศจากคณะกรรมการสภานักเรียน";
+  $("s-start").hidden = true; $("s-closed").hidden = false; $("app").hidden = false;
+}
+var ENTRY = null, PREVIEW = params.get("preview") === "1";
+if (topicId){
+  getList().then(function(d){
+    var e = (d.topics || []).filter(function(t){ return t.id === topicId; })[0];
+    ENTRY = e || null;
+    if (e) applyTheme(e.theme);
+    var st = e ? topicStatus(e) : "open";
+    if (st !== "open" && !PREVIEW) showClosed(e, st); else loadTopic();
+  }, function(){ loadTopic(); });
+} else {
+  getList().then(showHome, function(){ topicId = "environment-day"; loadTopic(); });
 }
 
 function init(T){
-  document.title = T.pageTitle || T.title;
-  $("title").textContent = T.title;
-  $("dateText").textContent = T.dateText || "";
+  var E = ENTRY || {};
+  document.title = T.pageTitle || E.title || T.title;
+  $("title").textContent = E.title || T.title;
+  $("dateText").textContent = E.dateText || T.dateText || "";
+  applyTheme(E.theme || T.theme);
+  if (PREVIEW && ENTRY && topicStatus(ENTRY) !== "open") $("prevNote").hidden = false;
   $("intro").innerHTML = "";
   (T.intro || []).forEach(function(t){ var p = document.createElement("p"); p.textContent = t; $("intro").appendChild(p); });
 
