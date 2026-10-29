@@ -27,14 +27,14 @@
       "theme": {
         "forest": "#3f2a12",
         "emerald": "#7b5a2e",
-        "leaf": "#f3e9dc",
         "gold": "#8a5a12",
+        "leaf": "#f3e9dc",
         "bg": "#f9f5ef",
         "heroSub": "#e8c99a",
         "icon": "🌱"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "fathers-day",
