@@ -139,14 +139,14 @@
       "theme": {
         "forest": "#0f3d5e",
         "emerald": "#1d6a8f",
-        "leaf": "#e3f1f8",
         "gold": "#8a6a12",
+        "leaf": "#e3f1f8",
         "bg": "#f2f7fa",
         "heroSub": "#ffe08a",
         "icon": "📚"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "inventors-day",
