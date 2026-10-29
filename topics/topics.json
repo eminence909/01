@@ -267,14 +267,14 @@
       "theme": {
         "forest": "#2f3a40",
         "emerald": "#55707a",
-        "leaf": "#e8eef0",
         "gold": "#8a6a12",
+        "leaf": "#e8eef0",
         "bg": "#f3f6f7",
         "heroSub": "#dfe9ec",
         "icon": "🐘"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "health-volunteer-day",
