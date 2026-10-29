@@ -122,14 +122,14 @@
       "theme": {
         "forest": "#123d27",
         "emerald": "#1f6b45",
-        "leaf": "#e6f0e8",
         "gold": "#966a12",
+        "leaf": "#e6f0e8",
         "bg": "#f3f6f3",
         "heroSub": "#f0d98a",
         "icon": "🌿"
       },
       "locked": true,
-      "draft": true
+      "noCert": true
     },
     {
       "id": "teachers-day",
